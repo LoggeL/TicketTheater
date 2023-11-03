@@ -1,3 +1,5 @@
+const API_URL = 'https://api.example.com'
+
 function bookTicket(event) {
   event.preventDefault()
 
@@ -22,7 +24,7 @@ function bookTicket(event) {
   const formData = new FormData(event.target)
   const data = Object.fromEntries(formData.entries())
   console.log(data)
-  fetch('https://example.com', {
+  fetch(`${API_URL}/ticket`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -73,12 +75,11 @@ function stornoTicket(event) {
   // Send form data to backend
   const formData = new FormData(event.target)
   const data = Object.fromEntries(formData.entries())
-  fetch('https://example.com', {
-    method: 'POST',
+  fetch(`${API_URL}/ticket/${data.ticketId}`, {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
   })
     .then((response) => {
       // Check for errors that the server might have sent
@@ -121,8 +122,8 @@ function getTicket(event) {
   // Send form data to backend
   const formData = new FormData(event.target)
   const data = Object.fromEntries(formData.entries())
-  fetch('https://example.com', {
-    method: 'POST',
+  fetch(`${API_URL}/ticket/${data.ticketId}`, {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
