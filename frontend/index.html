@@ -47,17 +47,17 @@
         <form onsubmit="bookTicket(event)">
             <div class="field label prefix border">
                 <i>person</i>
-                <input type="text" id="name">
+                <input type="text" name="name">
                 <label>Name</label>
             </div>
             <div class="field label prefix border">
                 <i>email</i>
-                <input type="email" id="email">
+                <input type="email" name="email">
                 <label>E-Mail</label>
             </div>
             <div class="field label prefix border">
                 <i>tag</i>
-                <input type="number" min="1" max="5" id="amount">
+                <input type="number" min="1" max="5" name="amount">
                 <label>Anzahl an Personen</label>
             </div>
             <button class="btn primary" type="submit" id="submit" disabled>Reservieren</button>

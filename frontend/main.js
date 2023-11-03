@@ -21,6 +21,7 @@ function bookTicket(event) {
   //   Send form data to backend
   const formData = new FormData(event.target)
   const data = Object.fromEntries(formData.entries())
+  console.log(data)
   fetch('https://example.com', {
     method: 'POST',
     headers: {
