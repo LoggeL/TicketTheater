@@ -36,35 +36,30 @@
     </header>
 
     <main class="responsive">
-        <h1>Ticket Reservierung für das Winterstück 2023</h1>
+        <h1>Ticket Stornierung</h1>
         <h5 class="small">
-            Willkommen zur Ticketreservierung für unser Theater Winterstück 2023! Da die Plätze begrenzt sind, bieten
-            wir kostenlose Karten an, um sicherzustellen, dass jeder die Chance hat, unsere Aufführung zu sehen. Bitte
-            reservieren Sie Ihre Karten unten und geben Sie uns Ihren Namen, Ihre E-Mail-Adresse und die Anzahl der
-            Personen (max 5.) in Ihrer Gruppe an. Wir freuen uns darauf, Sie bei unserem Winterstück begrüßen zu dürfen!
+            Hier können Sie Ihre Tickets stornieren.
         </h5>
-        <div class="space"></div>
-        <form onsubmit="bookTicket(event)">
+        <form onsubmit="stornoTicket(event)">
             <div class="field label prefix border">
-                <i>person</i>
-                <input type="text" id="name">
-                <label>Name</label>
+                <i>key</i>
+                <input type="text" id="ticketId">
+                <label>Ticket ID</label>
             </div>
+            <button class="red">
+                <i>warning</i>
+                Stornieren
+            </button>
             <div class="field label prefix border">
-                <i>email</i>
-                <input type="email" id="email">
-                <label>E-Mail</label>
+                <i>key</i>
+                <input type="text" id="ticketId">
+                <label>Ticket ID</label>
             </div>
-            <div class="field label prefix border">
-                <i>tag</i>
-                <input type="number" min="1" max="5" id="amount">
-                <label>Anzahl an Personen</label>
-            </div>
-            <button class="btn primary" type="submit" id="submit" disabled>Reservieren</button>
-            <div class="space"></div>
-            <!-- 0x4AAAAAAAMmiOHBE5aRG9yx -->
-            <div class="cf-turnstile" data-sitekey="3x00000000000000000000FF" data-callback="captchaCallback"
-                data-theme="light"></div>
+
+            <button type="submit" id="submit" class="red">
+                <i>warning</i>
+                Stornieren
+            </button>
         </form>
         <div class="snackbar error" id="snackbarError"></div>
         <div class="snackbar primary" id="snackbarSuccess"></div>
@@ -72,8 +67,18 @@
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"></script>
     <script src="main.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
 
+    <script>
+        // If hash
+        if (window.location.hash) {
+            // Get hash
+            const ticketId = window.location.hash.substring(1);
+            if (ticketId) {
+                // Set ticket id
+                document.getElementById("ticketId").value = ticketId;
+            }
+        }
+    </script>
 </body>
 
 </html>

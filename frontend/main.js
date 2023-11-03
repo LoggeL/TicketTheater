@@ -59,6 +59,103 @@ function bookTicket(event) {
     })
 }
 
+function stornoTicket(event) {
+  event.preventDefault()
+
+  console.log('submitting form')
+
+  // Check if the form is valid
+  if (!event.target.checkValidity()) {
+    return displayError('Bitte fülle alle Felder korrekt aus.')
+  }
+
+  // Send form data to backend
+  const formData = new FormData(event.target)
+  const data = Object.fromEntries(formData.entries())
+  fetch('https://example.com', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      // Check for errors that the server might have sent
+      response
+        .json()
+        .then((data) => {
+          if (data.error) {
+            displayError(data.error)
+          } else if (data.message) {
+            displaySuccess(data.message)
+          } else {
+            displayError(
+              'Beim Senden deiner Nachricht ist ein Fehler aufgetreten.'
+            )
+          }
+        })
+        .catch((error) => {
+          displayError(
+            'Beim Senden deiner Nachricht ist ein Fehler aufgetreten: ' + error
+          )
+        })
+    })
+    .catch((error) => {
+      displayError(
+        'Beim Senden deiner Nachricht ist ein Fehler aufgetreten: ' + error
+      )
+    })
+}
+
+function getTicket(event) {
+  event.preventDefault()
+
+  console.log('submitting form')
+
+  // Check if the form is valid
+  if (!event.target.checkValidity()) {
+    return displayError('Bitte fülle alle Felder korrekt aus.')
+  }
+
+  // Send form data to backend
+  const formData = new FormData(event.target)
+  const data = Object.fromEntries(formData.entries())
+  fetch('https://example.com', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      // Check for errors that the server might have sent
+      response
+        .json()
+        .then((data) => {
+          if (data.error) {
+            displayError(data.error)
+          } else if (data.message) {
+            displaySuccess(data.message)
+            displayTicketData(data.ticket)
+          } else {
+            displayError(
+              'Beim Senden deiner Nachricht ist ein Fehler aufgetreten.'
+            )
+          }
+        })
+        .catch((error) => {
+          displayError(
+            'Beim Senden deiner Nachricht ist ein Fehler aufgetreten: ' + error
+          )
+        })
+    })
+    .catch((error) => {
+      displayError(
+        'Beim Senden deiner Nachricht ist ein Fehler aufgetreten: ' + error
+      )
+    })
+}
+
 function displayError(e) {
   const snackbarError = document.getElementById('snackbarError')
   snackbarError.classList.add('active')
