@@ -1,0 +1,8 @@
+{
+    "cf-secret": "b0a1b2a3b4a5b6a7b8a9b0a1b2a3b4a5b6a7b8a9",
+    "port": 8080,
+    "mail": "someMail@example.com",
+    "password": "somePassword",
+    "server": "someServer",
+    "adminPassword": "someAdminPassword"
+}

@@ -1,104 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Theater Tickets</title>
 
-
-    <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
+      rel="stylesheet"
+    />
 
     <style>
-        body {
-            --primary: #ffa726;
-            --on-primary: #000000;
-        }
+      body {
+        --primary: #ffa726;
+        --on-primary: #000000;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <header class="primary">
-        <nav class="">
-            <button class="circle transparent" onclick="window.history.back()">
-                <i>arrow_back</i>
-                <span class="tooltip">
-                    zurück zur Hautpseite
-                </span>
-            </button>
-            <h5 class="max center-align">
-                <img class="" src="img/navLogo.png" style="height: 38px;">
-                Kolpingtheater Ramsen
-            </h5>
-            <button class="circle transparent">
-            </button>
-        </nav>
+      <nav class="">
+        <button class="circle transparent" onclick="window.history.back()">
+          <i>arrow_back</i>
+          <span class="tooltip"> zurück zur Hautpseite </span>
+        </button>
+        <h5 class="max center-align">
+          <img class="" src="img/navLogo.png" style="height: 38px" />
+          Kolpingtheater Ramsen
+        </h5>
+        <button class="circle transparent"></button>
+      </nav>
     </header>
 
     <main class="responsive">
-        <h1>Ticket Abfrage</h1>
-        <h5 class="small">
-            Hier können Sie den Status Ihres Tickets abfragen.
-        </h5>
-        <form onsubmit="getTicket(event)">
-            <div class="field label prefix border">
-                <i>key</i>
-                <input type="text" id="ticketId" name="ticketId">
-                <label>Ticket ID</label>
-            </div>
-            <button class="">
-                <i>info</i>
-                Abfragen
-            </button>
-        </form>
+      <h1>Ticket Abfrage</h1>
+      <h5 class="small">Hier können Sie den Status Ihres Tickets abfragen.</h5>
+      <form onsubmit="getTicket(event)">
+        <div class="field label prefix border">
+          <i>key</i>
+          <input type="text" id="ticketId" name="ticketId" />
+          <label>Ticket ID</label>
+        </div>
+        <button class="">
+          <i>info</i>
+          Abfragen
+        </button>
+      </form>
 
-        <article id="ticketResult" style="display: none;">
+      <article id="ticketResult" style="display: none"></article>
 
-        </article>
-
-
-        <div class="snackbar error" id="snackbarError"></div>
-        <div class="snackbar primary" id="snackbarSuccess"></div>
+      <div class="snackbar error" id="snackbarError"></div>
+      <div class="snackbar primary" id="snackbarSuccess"></div>
     </main>
 
-    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"
+    ></script>
     <script src="main.js"></script>
 
     <script>
-        // If hash
-        if (window.location.hash) {
-            // Get hash
-            const ticketId = window.location.hash.substring(1);
-            if (ticketId) {
-                // Set ticket id
-                document.getElementById("ticketId").value = ticketId;
-            }
+      // If hash
+      if (window.location.hash) {
+        // Get hash
+        const ticketId = window.location.hash.substring(1)
+        if (ticketId) {
+          // Set ticket id
+          document.getElementById('ticketId').value = ticketId
         }
+      }
 
-        function displayTicketData(ticket) {
-            // Display ticket data
-            // <div class="row">
-            //     <span>key: value</span>
-            // </div>
-            const ticketResult = document.getElementById("ticketResult");
-            ticketResult.style.display = "block";
-            document.getElementById("ticketId").value = "";
-            // Disable submit button
-            document.getElementById("submit").disabled = true;
-            ticketResult.innerHTML = "";
-            for (const key in ticket) {
-                if (Object.hasOwnProperty.call(ticket,key)) {
-                    const value = ticket[key];
-                    const row = document.createElement("div");
-                    row.classList.add("row");
-                    const span = document.createElement("span");
-                    span.innerText = `${key}: ${value}`;
-                    row.appendChild(span);
-                    ticketResult.appendChild(row);
-                }
-            }
+      function displayTicketData(ticket) {
+        // Display ticket data
+        // <div class="row">
+        //     <span>key: value</span>
+        // </div>
+        const ticketResult = document.getElementById('ticketResult')
+        ticketResult.style.display = 'block'
+        document.getElementById('ticketId').value = ''
+        // Disable submit button
+        document.getElementById('submit').disabled = true
+        ticketResult.innerHTML = ''
+        for (const key in ticket) {
+          if (Object.hasOwnProperty.call(ticket, key)) {
+            const value = ticket[key]
+            const row = document.createElement('div')
+            row.classList.add('row')
+            const span = document.createElement('span')
+            span.innerText = `${key}: ${value}`
+            row.appendChild(span)
+            ticketResult.appendChild(row)
+          }
         }
+      }
     </script>
-</body>
-
+  </body>
 </html>

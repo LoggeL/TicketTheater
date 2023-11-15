@@ -1,79 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Theater Tickets</title>
 
-
-    <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
+      rel="stylesheet"
+    />
 
     <style>
-        body {
-            --primary: #ffa726;
-            --on-primary: #000000;
-        }
+      body {
+        --primary: #ffa726;
+        --on-primary: #000000;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <header class="primary">
-        <nav class="">
-            <button class="circle transparent" onclick="window.history.back()">
-                <i>arrow_back</i>
-                <span class="tooltip">
-                    zurück zur Hautpseite
-                </span>
-            </button>
-            <h5 class="max center-align">
-                <img class="" src="img/navLogo.png" style="height: 38px;">
-                Kolpingtheater Ramsen
-            </h5>
-            <button class="circle transparent">
-            </button>
-        </nav>
+      <nav class="">
+        <button class="circle transparent" onclick="window.history.back()">
+          <i>arrow_back</i>
+          <span class="tooltip"> zurück zur Hautpseite </span>
+        </button>
+        <h5 class="max center-align">
+          <img class="" src="img/navLogo.png" style="height: 38px" />
+          Kolpingtheater Ramsen
+        </h5>
+        <button class="circle transparent"></button>
+      </nav>
     </header>
 
     <main class="responsive">
-        <h1>Ticket Reservierung für das Winterstück 2023</h1>
-        <h5 class="small">
-            Willkommen zur Ticketreservierung für unser Theater Winterstück 2023! Da die Plätze begrenzt sind, bieten
-            wir kostenlose Karten an, um sicherzustellen, dass jeder die Chance hat, unsere Aufführung zu sehen. Bitte
-            reservieren Sie Ihre Karten unten und geben Sie uns Ihren Namen, Ihre E-Mail-Adresse und die Anzahl der
-            Personen (max 5.) in Ihrer Gruppe an. Wir freuen uns darauf, Sie bei unserem Winterstück begrüßen zu dürfen!
-        </h5>
+      <h1>Ticket Reservierung für das Winterstück 2023</h1>
+      <h5 class="small">
+        Willkommen zur Ticketreservierung für unser Theater Winterstück 2023! Da
+        die Plätze begrenzt sind, bieten wir kostenlose Karten an, um
+        sicherzustellen, dass jeder die Chance hat, unsere Aufführung zu sehen.
+        Bitte reservieren Sie Ihre Karten unten und geben Sie uns Ihren Namen,
+        Ihre E-Mail-Adresse und die Anzahl der Personen (max 5.) in Ihrer Gruppe
+        an. Wir freuen uns darauf, Sie bei unserem Winterstück begrüßen zu
+        dürfen!
+      </h5>
+      <div class="space"></div>
+      <form onsubmit="bookTicket(event)">
+        <div class="field label prefix border">
+          <i>person</i>
+          <input type="text" name="name" />
+          <label>Name</label>
+        </div>
+        <div class="field label prefix border">
+          <i>email</i>
+          <input type="email" name="email" />
+          <label>E-Mail</label>
+        </div>
+        <div class="field label prefix border">
+          <i>tag</i>
+          <input type="number" min="1" max="5" name="numPeople" />
+          <label>Anzahl an Personen</label>
+        </div>
+        <button class="btn primary" type="submit" id="submit" disabled>
+          Reservieren
+        </button>
         <div class="space"></div>
-        <form onsubmit="bookTicket(event)">
-            <div class="field label prefix border">
-                <i>person</i>
-                <input type="text" name="name">
-                <label>Name</label>
-            </div>
-            <div class="field label prefix border">
-                <i>email</i>
-                <input type="email" name="email">
-                <label>E-Mail</label>
-            </div>
-            <div class="field label prefix border">
-                <i>tag</i>
-                <input type="number" min="1" max="5" name="amount">
-                <label>Anzahl an Personen</label>
-            </div>
-            <button class="btn primary" type="submit" id="submit" disabled>Reservieren</button>
-            <div class="space"></div>
-            <!-- 0x4AAAAAAAMmiOHBE5aRG9yx -->
-            <div class="cf-turnstile" data-sitekey="3x00000000000000000000FF" data-callback="captchaCallback"
-                data-theme="light"></div>
-        </form>
-        <div class="snackbar error" id="snackbarError"></div>
-        <div class="snackbar primary" id="snackbarSuccess"></div>
+        <!-- 0x4AAAAAAAMmiOHBE5aRG9yx -->
+        <div
+          class="cf-turnstile"
+          data-sitekey="3x00000000000000000000FF"
+          data-callback="captchaCallback"
+          data-theme="light"
+        ></div>
+      </form>
+      <div class="snackbar error" id="snackbarError"></div>
+      <div class="snackbar primary" id="snackbarSuccess"></div>
     </main>
 
-    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"
+    ></script>
     <script src="main.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
-
-</body>
-
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      defer
+    ></script>
+  </body>
 </html>

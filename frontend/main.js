@@ -1,4 +1,4 @@
-const API_URL = 'https://api.example.com'
+const API_URL = 'api'
 
 function bookTicket(event) {
   event.preventDefault()

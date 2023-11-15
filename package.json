@@ -1,0 +1,16 @@
+{
+  "name": "TicketTheater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^3.0.1",
+    "sqlite3": "^5.1.6"
+  }
+}
