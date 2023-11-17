@@ -1,9 +1,11 @@
 const express = require('express')
+const { $fetch } = require('ohmyfetch')
 const knex = require('knex')({
   client: 'sqlite3',
   connection: {
     filename: './data.sqlite',
   },
+  useNullAsDefault: true,
 })
 
 const config = require('./config.json')
@@ -20,7 +22,7 @@ knex.schema
         table.string('email')
         table.string('show')
         table.string('numPeople')
-        table.string('created')
+        table.string('bookingDate')
         table.timestamps(true, true)
       })
     }
@@ -72,21 +74,30 @@ knex('shows')
   })
 
 const app = express()
-const port = 3000
+const port = config.port || 3000
 
 app.use(express.json())
-app.use(express.static('fronted'))
+app.use(express.static('frontend'))
+
+// Loggin middleware for api
+app.use('/api', (request, response, next) => {
+  console.log(request.method, request.url)
+  next()
+})
 
 // Get all tickets
-app.get('/ticket', async (request, response) => {
+app.get('/api/ticket', async (request, response) => {
   try {
     // Check if the password is correct
-    const password = request.headers.get('X-Password')
+    const password = request.headers['x-password']
     if (password !== config.adminPassword) {
       return response.status(401).json({ error: 'Unauthorized' })
     }
     const tickets = await knex.select().table('tickets')
-    response.json(tickets)
+    response.json({
+      message: 'Tickets gefunden',
+      tickets,
+    })
   } catch (error) {
     console.error(error)
     response.status(500).json({ error: 'Internal server error' })
@@ -94,7 +105,7 @@ app.get('/ticket', async (request, response) => {
 })
 
 // Get all shows
-app.get('/show', async (request, response) => {
+app.get('/api/show', async (request, response) => {
   try {
     const shows = await knex.select().table('shows')
     response.json(shows)
@@ -105,9 +116,15 @@ app.get('/show', async (request, response) => {
 })
 
 // Create a new ticket
-app.post('/ticket', async (request, response) => {
+app.post('/api/ticket', async (request, response) => {
   try {
-    const { name, email, show, numPeople } = request.body
+    const {
+      name,
+      email,
+      show,
+      numPeople,
+      ['cf-turnstile-response']: token,
+    } = request.body
 
     // Validate all fields
     if (!name) {
@@ -129,24 +146,21 @@ app.post('/ticket', async (request, response) => {
         .json({ error: 'Anzahl Personen muss zwischen 1 und 5 liegen' })
     }
 
-    const token = body.get('cf-turnstile-response')
-    const ip = request.headers.get('CF-Connecting-IP')
+    const ip = request.headers['cf-connecting-ip'] || request.ip
 
-    // Validate the token by calling the
-    // "/siteverify" API endpoint.
-    let formData = new FormData()
-    formData.append('secret', config['cf-secret'])
-    formData.append('response', token)
-    formData.append('remoteip', ip)
-
+    // Validate the token by calling the Cloudflare API
     const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-    const result = await fetch(url, {
-      body: formData,
+    const result = await $fetch(url, {
+      body: {
+        secret: config['cf-secret'],
+        response: token,
+        remoteip: ip,
+      },
       method: 'POST',
+      parseResponse: JSON.parse,
     })
 
-    const outcome = await result.json()
-    if (!outcome.success) {
+    if (!result.success) {
       return response.status(400).json({ error: 'Captcha invalid' })
     }
 
@@ -188,16 +202,16 @@ app.post('/ticket', async (request, response) => {
 })
 
 // Delete a ticket
-app.delete('/ticket/:ticketId', async (request, response) => {
+app.delete('/api/ticket/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     // Check if the ticket exists
-    const tickets = await knex('tickets').where({ ticketId: id })
+    const tickets = await knex('tickets').where({ ticketId })
     if (tickets.length === 0) {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
-    await knex('tickets').where({ id }).del()
-    response.json({ id, message: 'Ticket gelöscht' })
+    await knex('tickets').where({ ticketId }).del()
+    response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
     console.error(error)
     response.status(500).json({ error: 'Internal server error' })
@@ -205,11 +219,17 @@ app.delete('/ticket/:ticketId', async (request, response) => {
 })
 
 // Get a single ticket
-app.get('/ticket/:ticketId', async (request, response) => {
+app.get('/api/ticket/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
-    const ticket = await knex('tickets').where({ id }).first()
-    response.json(ticket)
+    const ticket = await knex('tickets').where({ ticketId }).first()
+    if (!ticket) {
+      return response.status(400).json({ error: 'Ticket existiert nicht' })
+    }
+    response.json({
+      message: 'Ticket gefunden',
+      ticket,
+    })
   } catch (error) {
     console.error(error)
     response.status(500).json({ error: 'Internal server error' })
@@ -218,5 +238,5 @@ app.get('/ticket/:ticketId', async (request, response) => {
 
 // Run server
 app.listen(port, () => {
-  console.log(`Server listening at http://0.0.0.0:${port}`)
+  console.log(`Server listening at http://127.0.0.1:${port}`)
 })

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theater Tickets</title>
+    <!-- Favicon img/logo.png -->
+    <link rel="icon" href="img/logo.png" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        --primary: #ffa726;
+        --on-primary: #000000;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="primary">
+      <nav class="">
+        <button class="circle transparent" onclick="window.history.back()">
+          <i>arrow_back</i>
+          <span class="tooltip"> zurück zur Hautpseite </span>
+        </button>
+        <h5 class="max center-align">
+          <img class="" src="img/navLogo.png" style="height: 38px" />
+          Kolpingtheater Ramsen
+        </h5>
+        <button class="circle transparent"></button>
+      </nav>
+    </header>
+
+    <main class="responsive">
+      <h1>Admin Ticket Übersicht</h1>
+      <h5 class="small">
+        Hier können Sie den Status ALLER Tickets mit dem Passwort abfragen.
+      </h5>
+      <form onsubmit="getTickets(event)">
+        <div class="field label prefix border">
+          <i>key</i>
+          <input type="password" id="password" name="password" required />
+          <label>Password</label>
+        </div>
+        <button class="" id="submit" type="submit">
+          <i>info</i>
+          Abfragen
+        </button>
+      </form>
+
+      <article id="ticketResult" style="display: none"></article>
+
+      <div class="snackbar error" id="snackbarError"></div>
+      <div class="snackbar primary" id="snackbarSuccess"></div>
+    </main>
+
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"
+    ></script>
+    <script src="main.js"></script>
+
+    <script>
+      function displayTickets(tickets) {
+        const ticketResult = document.getElementById('ticketResult')
+        // Clear ticket result
+        ticketResult.innerHTML = ''
+        // Create table
+        const table = document.createElement('table')
+        table.classList.add('bordered')
+        // Create table head
+        const thead = document.createElement('thead')
+        const tr = document.createElement('tr')
+        for (const key in tickets[0]) {
+          const th = document.createElement('th')
+          th.textContent = key
+          tr.appendChild(th)
+        }
+        thead.appendChild(tr)
+        table.appendChild(thead)
+
+        // Create table body
+        const tbody = document.createElement('tbody')
+        for (const ticket of tickets) {
+          const tr = document.createElement('tr')
+          for (const key in ticket) {
+            const td = document.createElement('td')
+            td.textContent = ticket[key]
+            tr.appendChild(td)
+          }
+          tbody.appendChild(tr)
+        }
+
+        table.appendChild(tbody)
+        ticketResult.appendChild(table)
+        ticketResult.style.display = 'block'
+      }
+    </script>
+  </body>
+</html>

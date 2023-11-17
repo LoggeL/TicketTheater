@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Theater Tickets</title>
+    <link rel="icon" href="img/logo.png" />
 
     <link
       href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
@@ -14,6 +15,11 @@
       body {
         --primary: #ffa726;
         --on-primary: #000000;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.2rem;
       }
     </style>
   </head>
@@ -39,10 +45,10 @@
       <form onsubmit="getTicket(event)">
         <div class="field label prefix border">
           <i>key</i>
-          <input type="text" id="ticketId" name="ticketId" />
+          <input type="text" id="ticketId" name="ticketId" required />
           <label>Ticket ID</label>
         </div>
-        <button class="">
+        <button class="" id="submit" type="submit">
           <i>info</i>
           Abfragen
         </button>
@@ -72,27 +78,97 @@
       }
 
       function displayTicketData(ticket) {
-        // Display ticket data
-        // <div class="row">
-        //     <span>key: value</span>
-        // </div>
+        // {
+        //   "id": 1,
+        //   "ticketId": "mm1825vx4",
+        //   "name": "Logge",
+        //   "email": "stueber@rhrk.uni-kl.de",
+        //   "show": "1",
+        //   "numPeople": "3",
+        //   "created": "2023-11-17T16:43:57.152Z",
+        //   "created_at": "2023-11-17 16:43:57",
+        //   "updated_at": "2023-11-17 16:43:57"
+        // }
+
         const ticketResult = document.getElementById('ticketResult')
         ticketResult.style.display = 'block'
-        document.getElementById('ticketId').value = ''
         // Disable submit button
         document.getElementById('submit').disabled = true
         ticketResult.innerHTML = ''
-        for (const key in ticket) {
-          if (Object.hasOwnProperty.call(ticket, key)) {
-            const value = ticket[key]
-            const row = document.createElement('div')
-            row.classList.add('row')
-            const span = document.createElement('span')
-            span.innerText = `${key}: ${value}`
-            row.appendChild(span)
-            ticketResult.appendChild(row)
-          }
-        }
+
+        // Fill card
+        const div = document.createElement('div')
+        div.classList.add('padding')
+
+        const mainRow = document.createElement('div')
+        mainRow.classList.add('grid')
+
+        const infoDiv = document.createElement('div')
+        infoDiv.classList.add('s12', 'm6')
+
+        const row = document.createElement('div')
+        row.classList.add('row')
+
+        const img = document.createElement('img')
+        img.classList.add('large')
+        img.src = 'img/logo.png'
+        row.appendChild(img)
+
+        const h5 = document.createElement('h5')
+        h5.textContent = 'Sagenhaft Ticket'
+        row.appendChild(h5)
+
+        infoDiv.appendChild(row)
+
+        const p2 = document.createElement('p')
+        p2.textContent = `Name: ${ticket.name}`
+        infoDiv.appendChild(p2)
+
+        const p3 = document.createElement('p')
+        p3.textContent = `E-Mail: ${ticket.email}`
+        infoDiv.appendChild(p3)
+
+        const p4 = document.createElement('p')
+        p4.textContent = `Anzahl Personen: ${ticket.numPeople}`
+        infoDiv.appendChild(p4)
+
+        const p5 = document.createElement('p')
+        p5.textContent = `Aufführung: ${ticket.show}`
+        infoDiv.appendChild(p5)
+
+        const p6 = document.createElement('p')
+        p6.textContent = `Erstellt: ${new Date(
+          ticket.created_at
+        ).toLocaleString()}`
+        infoDiv.appendChild(p6)
+
+        imgDiv = document.createElement('div')
+        imgDiv.classList.add('s12', 'm6')
+
+        const img2 = document.createElement('img')
+        img2.classList.add('responsive')
+        img2.src = 'img/sagenhaft.jpg'
+        imgDiv.appendChild(img2)
+
+        mainRow.appendChild(infoDiv)
+        mainRow.appendChild(imgDiv)
+
+        div.appendChild(mainRow)
+
+        ticketResult.appendChild(div)
+
+        // <article class="no-padding round">
+        //   <img class="responsive small top-round" src="/beer-and-woman.jpg"><!----><!---->
+        //   <div class="padding">
+        //     <h5>Title</h5>
+        //     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        //     <nav>
+        //       <button>Button</button>
+        //     </nav>
+        //   </div>
+        // </article>
+        const article = document.createElement('article')
+        article.classList.add('no-padding', 'round')
       }
     </script>
   </body>
