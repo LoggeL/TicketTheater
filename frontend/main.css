@@ -1,0 +1,61 @@
+body {
+  --primary: #ffa726;
+  --on-primary: #000000;
+}
+
+.large {
+  font-size: 1.2rem;
+}
+
+b {
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: bolder;
+}
+
+body {
+  background-color: #f2f2f2;
+}
+
+main {
+  min-block-size: calc(100vh - 64px) !important;
+}
+
+/* Base container for the triangles */
+.triangle-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -3; /* Ensures the triangles are in the background */
+}
+
+/* First triangle */
+.triangle-container::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  z-index: -1;
+  border-left: calc(100vw * 0.5) solid transparent;
+  border-right: calc(100vw * 0.5) solid transparent;
+  border-bottom: calc(100vw * 0.25) solid black;
+}
+
+/* Second, slightly smaller triangle overlapping the first */
+.triangle-container::after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translateX(+50%);
+  width: 0;
+  height: 0;
+  border-left: calc(100vw * 0.75) solid transparent;
+  border-right: calc(100vw * 0.55) solid transparent;
+  border-bottom: calc(100vw * 0.25) solid var(--primary);
+}

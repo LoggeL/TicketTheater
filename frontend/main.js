@@ -220,7 +220,7 @@ async function getShows() {
 async function fillShowSelect() {
   const shows = await getShows()
   const select = document.getElementById('show')
-  data.forEach((show) => {
+  shows.forEach((show) => {
     const option = document.createElement('option')
     option.value = show.id
     // [${freeSeats} freie Plätze] ${name} (${date} ${time})

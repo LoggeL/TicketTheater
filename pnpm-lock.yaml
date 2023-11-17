@@ -2,11 +2,13 @@ lockfileVersion: 5.4
 
 specifiers:
   knex: ^3.0.1
+  nodemailer: ^6.9.7
   ohmyfetch: ^0.4.21
   sqlite3: ^5.1.6
 
 dependencies:
   knex: 3.0.1_sqlite3@5.1.6
+  nodemailer: 6.9.7
   ohmyfetch: 0.4.21
   sqlite3: 5.1.6
 
@@ -649,6 +651,11 @@ packages:
       - supports-color
     dev: false
     optional: true
+
+  /nodemailer/6.9.7:
+    resolution: {integrity: sha512-rUtR77ksqex/eZRLmQ21LKVH5nAAsVicAtAYudK7JgwenEDZ0UIQ1adUGqErz7sMkWYxWTTU1aeP2Jga6WQyJw==}
+    engines: {node: '>=6.0.0'}
+    dev: false
 
   /nopt/5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}

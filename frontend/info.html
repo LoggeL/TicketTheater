@@ -10,21 +10,11 @@
       href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
       rel="stylesheet"
     />
-
-    <style>
-      body {
-        --primary: #ffa726;
-        --on-primary: #000000;
-      }
-
-      p {
-        margin: 0;
-        font-size: 1.2rem;
-      }
-    </style>
+    <link rel="stylesheet" href="main.css" />
   </head>
 
   <body>
+    <div class="triangle-container"></div>
     <header class="primary">
       <nav class="">
         <button class="circle transparent" onclick="window.history.back()">
@@ -141,6 +131,18 @@
           ticket.created_at
         ).toLocaleString()}`
         infoDiv.appendChild(p6)
+
+        // Stornieren button
+        const button = document.createElement('button')
+        button.classList.add('btn', 'red')
+        button.textContent = 'Stornieren'
+        const icon = document.createElement('i')
+        icon.textContent = 'warning'
+        button.prepend(icon)
+        button.onclick = () => {
+          window.location.href = `storno.html#${ticket.ticketId}`
+        }
+        infoDiv.appendChild(button)
 
         imgDiv = document.createElement('div')
         imgDiv.classList.add('s12', 'm6')

@@ -1,5 +1,6 @@
 const express = require('express')
 const { $fetch } = require('ohmyfetch')
+const nodemailer = require('nodemailer')
 const knex = require('knex')({
   client: 'sqlite3',
   connection: {
@@ -72,6 +73,18 @@ knex('shows')
   .catch((error) => {
     console.error(error)
   })
+
+const mailConfig = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: config.emailUser,
+    pass: config.emailPassword,
+  },
+}
+
+const transporter = nodemailer.createTransport(mailConfig)
 
 const app = express()
 const port = config.port || 3000
@@ -170,16 +183,16 @@ app.post('/api/ticket', async (request, response) => {
       return response.status(400).json({ error: 'Show existiert nicht' })
     }
 
-    // Check if there are enough free seats
-    const freeSeats = shows[0].freeSeats
-    if (freeSeats < numPeople) {
-      return response.status(400).json({ error: 'Nicht genügend freie Plätze' })
-    }
-
     // Check if email is already used
     const tickets = await knex('tickets').where({ email })
     if (tickets.length > 0) {
       return response.status(400).json({ error: 'Email bereits verwendet' })
+    }
+
+    // Check if there are enough free seats
+    const freeSeats = shows[0].freeSeats
+    if (freeSeats < numPeople) {
+      return response.status(400).json({ error: 'Nicht genügend freie Plätze' })
     }
 
     // Create ticket
@@ -192,7 +205,14 @@ app.post('/api/ticket', async (request, response) => {
     // Update free seats
     await knex('shows')
       .where({ id: show })
-      .update({ freeSeats: freeSeats - numPeople })
+      .update({ freeSeats: parseInt(freeSeats) - parseInt(numPeople) })
+
+    await transporter.sendMail({
+      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
+      to: ticket.email,
+      subject: 'Ticket Buchung - Kolpingjungen Ramsen',
+      text: `Hallo ${ticket.name}, dein Ticket wurde erfolgreich gebucht. Du kannst es unter folgendem Link aufrufen: https://theater.logge.top/info.html#${ticket.ticketId}. Falls du Fragen hast, kannst du dich gerne an uns wenden. Viele Grüße, Kolpingjungen Ramsen`,
+    })
 
     return response.json({ message: 'Ticket erstellt', ticketId })
   } catch (error) {
@@ -211,6 +231,23 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
     await knex('tickets').where({ ticketId }).del()
+    // Update free seats
+    const ticket = tickets[0]
+    const shows = await knex('shows').where({ id: ticket.show })
+    const show = shows[0]
+    await knex('shows')
+      .where({ id: ticket.show })
+      .update({
+        freeSeats: parseInt(show.freeSeats) + parseInt(ticket.numPeople),
+      })
+
+    await transporter.sendMail({
+      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
+      to: ticket.email,
+      subject: 'Ticket Stornierung - Kolpingjungen Ramsen',
+      text: `Hallo ${ticket.name}, dein Ticket wurde storniert. Falls du Fragen hast, kannst du dich gerne an uns wenden. Viele Grüße, Kolpingjungen Ramsen`,
+    })
+
     response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
     console.error(error)

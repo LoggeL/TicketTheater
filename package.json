@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "knex": "^3.0.1",
+    "nodemailer": "^6.9.7",
     "ohmyfetch": "^0.4.21",
     "sqlite3": "^5.1.6"
   }
