@@ -23,7 +23,7 @@ knex.schema
         table.string('email')
         table.string('show')
         table.string('numPeople')
-        table.string('bookingDate')
+        table.string('created')
         table.timestamps(true, true)
       })
     }
@@ -174,7 +174,7 @@ app.post('/api/ticket', async (request, response) => {
     })
 
     if (!result.success) {
-      return response.status(400).json({ error: 'Captcha invalid' })
+      return response.status(400).json({ error: 'Captcha invalid', result })
     }
 
     // Check if show exists
