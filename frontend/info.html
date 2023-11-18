@@ -68,18 +68,6 @@
       }
 
       function displayTicketData(ticket) {
-        // {
-        //   "id": 1,
-        //   "ticketId": "mm1825vx4",
-        //   "name": "Logge",
-        //   "email": "stueber@rhrk.uni-kl.de",
-        //   "show": "1",
-        //   "numPeople": "3",
-        //   "created": "2023-11-17T16:43:57.152Z",
-        //   "created_at": "2023-11-17 16:43:57",
-        //   "updated_at": "2023-11-17 16:43:57"
-        // }
-
         const ticketResult = document.getElementById('ticketResult')
         ticketResult.style.display = 'block'
         // Disable submit button
@@ -134,8 +122,8 @@
 
         // Stornieren button
         const button = document.createElement('button')
-        button.classList.add('btn', 'red')
-        button.textContent = 'Stornieren'
+        button.classList.add('btn', 'yellow')
+        button.textContent = 'Zur Stornierung'
         const icon = document.createElement('i')
         icon.textContent = 'warning'
         button.prepend(icon)
@@ -159,16 +147,6 @@
 
         ticketResult.appendChild(div)
 
-        // <article class="no-padding round">
-        //   <img class="responsive small top-round" src="/beer-and-woman.jpg"><!----><!---->
-        //   <div class="padding">
-        //     <h5>Title</h5>
-        //     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        //     <nav>
-        //       <button>Button</button>
-        //     </nav>
-        //   </div>
-        // </article>
         const article = document.createElement('article')
         article.classList.add('no-padding', 'round')
       }
