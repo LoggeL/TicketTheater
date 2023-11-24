@@ -51,23 +51,7 @@ knex('shows')
   .select()
   .then((shows) => {
     if (shows.length === 0) {
-      const shows = [
-        {
-          name: 'Aufführung 1',
-          date: '2023-12-29',
-          time: '18:00',
-          totalSeats: 50,
-          freeSeats: 50,
-        },
-        {
-          name: 'Aufführung 2',
-          date: '2023-12-29',
-          time: '20:00',
-          totalSeats: 50,
-          freeSeats: 50,
-        },
-      ]
-      return knex('shows').insert(shows)
+      return knex('shows').insert(config.shows)
     }
   })
   .catch((error) => {
@@ -84,6 +68,7 @@ const mailConfig = {
   },
 }
 
+
 const transporter = nodemailer.createTransport(mailConfig)
 
 const app = express()
@@ -91,6 +76,13 @@ const port = config.port || 3000
 
 app.use(express.json())
 app.use(express.static('frontend'))
+
+function mailTemplate(string, data) {
+  for (const key in data) {
+    string = string.replace(`{${key}}`, data[key])
+  }
+  return string
+}
 
 // Loggin middleware for api
 app.use('/api', (request, response, next) => {
@@ -210,8 +202,14 @@ app.post('/api/ticket', async (request, response) => {
     await transporter.sendMail({
       from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
       to: ticket.email,
-      subject: 'Ticket Buchung - Kolpingjungen Ramsen',
-      text: `Hallo ${ticket.name}, dein Ticket wurde erfolgreich gebucht. Du kannst es unter folgendem Link aufrufen: https://theater.logge.top/info.html#${ticket.ticketId}. Falls du Fragen hast, kannst du dich gerne an uns wenden. Viele Grüße, Kolpingjungen Ramsen`,
+      subject: config.emails.reservation.subject,
+      text: mailTemplate(config.emails.reservation.body, {
+        NAME: ticket.name,
+        DATE: shows[0].date,
+        TIME: shows[0].time,
+        NUMPEOPLE: ticket.numPeople,
+        INFO_LINK: `${config.url}/info.html#${ticket.ticketId}`,
+      }),
     })
 
     return response.json({ message: 'Ticket erstellt', ticketId })
@@ -242,10 +240,16 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
       })
 
     await transporter.sendMail({
-      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
+      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, 
       to: ticket.email,
-      subject: 'Ticket Stornierung - Kolpingjungen Ramsen',
-      text: `Hallo ${ticket.name}, dein Ticket wurde storniert. Falls du Fragen hast, kannst du dich gerne an uns wenden. Viele Grüße, Kolpingjungen Ramsen`,
+      subject: config.emails.cancellation.subject,
+      text: mailTemplate(config.emails.cancellation.body, {
+        NAME: ticket.name,
+        DATE: show.date,
+        TIME: show.time,
+        NUMPEOPLE: ticket.numPeople,
+        INFO_LINK: config.url,
+      }),
     })
 
     response.json({ ticketId, message: 'Ticket gelöscht' })
