@@ -32,19 +32,41 @@ knex.schema
     console.error(error)
   })
 
-knex.schema.hasTable('shows').then((exists) => {
-  if (!exists) {
-    return knex.schema.createTable('shows', (table) => {
-      table.increments('id').primary()
-      table.string('name')
-      table.string('date')
-      table.string('time')
-      table.string('totalSeats')
-      table.string('freeSeats')
-      table.timestamps(true, true)
-    })
-  }
-})
+knex.schema
+  .hasTable('shows')
+  .then((exists) => {
+    if (!exists) {
+      return knex.schema.createTable('shows', (table) => {
+        table.increments('id').primary()
+        table.string('name')
+        table.string('date')
+        table.string('time')
+        table.string('totalSeats')
+        table.string('freeSeats')
+        table.timestamps(true, true)
+      })
+    }
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+
+knex.schema
+  .hasTable('seats')
+  .then((exists) => {
+    if (!exists) {
+      return knex.schema.createTable('seats', (table) => {
+        table.increments('id').primary()
+        table.string('row')
+        table.string('seat')
+        table.string('ticket')
+        table.timestamps(true, true)
+      })
+    }
+  })
+  .catch((error) => {
+    console.error(error)
+  })
 
 // Populate shows if empty
 knex('shows')
@@ -67,7 +89,6 @@ const mailConfig = {
     pass: config.emailPassword,
   },
 }
-
 
 const transporter = nodemailer.createTransport(mailConfig)
 
@@ -240,7 +261,7 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
       })
 
     await transporter.sendMail({
-      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, 
+      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`,
       to: ticket.email,
       subject: config.emails.cancellation.subject,
       text: mailTemplate(config.emails.cancellation.body, {

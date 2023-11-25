@@ -207,6 +207,71 @@ function getTickets(event) {
     })
 }
 
+let seatData = {
+  rows: 7,
+  seats: 10,
+  booked: {
+    '0-2': true,
+    '3-5': true,
+  },
+}
+
+const seatCounterNumber = document.getElementById('seatCounterNumber')
+function displaySeats(data) {
+  const seats = document.getElementById('seatContainer')
+  seats.innerHTML = '<div class="grid"><div class="s12 stage">Bühne</div></div>'
+
+  for (let row = 0; row < data.rows; row++) {
+    const rowElement = document.createElement('div')
+    rowElement.classList.add('grid', 'no-space')
+    const spacer = 12 - data.seats
+    for (let seat = 0; seat < data.seats; seat++) {
+      // Spacer in the middle
+      if (seat === Math.floor(data.seats / 2)) {
+        for (let i = 0; i < spacer; i++) {
+          const spacerElement = document.createElement('div')
+          spacerElement.classList.add()
+          rowElement.appendChild(spacerElement)
+        }
+      }
+      const seatElement = document.createElement('div')
+      seatElement.classList.add('seat')
+      if (data.booked[`${row}-${seat}`]) {
+        seatElement.classList.add('booked')
+      }
+      seatElement.addEventListener('click', () => {
+        if (seatElement.classList.contains('selected')) {
+          seatElement.classList.remove('selected')
+          delete data.booked[`${row}-${seat}`]
+          seatCounterNumber.innerText =
+            document.querySelectorAll('.seat.selected').length
+          if (seatCounterNumber.innerText <= 5) {
+            seatCounterNumber.parentElement.classList.remove('yellow')
+          }
+        } else if (seatElement.classList.contains('booked')) {
+          return
+        } else {
+          if (document.querySelectorAll('.seat.selected').length >= 5) {
+            return
+          }
+          seatElement.classList.add('selected')
+          data.booked[`${row}-${seat}`] = true
+          seatCounterNumber.innerText =
+            document.querySelectorAll('.seat.selected').length
+          console.log('red')
+          if (seatCounterNumber.innerText >= 5) {
+            seatCounterNumber.parentElement.classList.add('yellow')
+          }
+        }
+      })
+      seatElement.innerHTML = `${row + 1}-${seat + 1}`
+      rowElement.appendChild(seatElement)
+    }
+    seats.appendChild(rowElement)
+  }
+}
+displaySeats(seatData)
+
 async function getShows() {
   try {
     const response = await fetch(`${API_URL}/show`)

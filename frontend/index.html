@@ -54,11 +54,6 @@
             <input type="email" name="email" />
             <label>E-Mail</label>
           </div>
-          <div class="field label prefix border">
-            <i>tag</i>
-            <input type="number" min="1" max="5" name="numPeople" />
-            <label>Anzahl an Personen</label>
-          </div>
           <div class="field label suffix border">
             <select name="show" id="show">
               <option selected disabled>Bitte auswählen</option>
@@ -66,6 +61,12 @@
             <label>Aufführung</label>
             <i>arrow_drop_down</i>
           </div>
+          <h2><i class="extra">event_seat</i>Platzauswahl</h2>
+          <h3 id="seatCounter">
+            <span id="seatCounterNumber">0</span> / 5 Plätze gewählt
+          </h3>
+          <div id="seatContainer"></div>
+          <div class="space"></div>
           <button class="btn primary" type="submit" id="submit" disabled>
             Reservieren
           </button>

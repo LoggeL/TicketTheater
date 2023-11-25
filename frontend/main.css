@@ -59,3 +59,35 @@ main {
   border-right: calc(100vw * 0.55) solid transparent;
   border-bottom: calc(100vw * 0.25) solid var(--primary);
 }
+
+.seat,
+.stage {
+  border: 1px solid #000000;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.seat {
+  aspect-ratio: 1;
+}
+
+.stage {
+  aspect-ratio: 12;
+  background-color: #bdbdbd;
+}
+
+.seat:hover {
+  cursor: pointer;
+  background-color: #ffbb54;
+}
+
+.seat.booked {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.seat.selected {
+  background-color: #ffa726;
+}
