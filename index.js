@@ -22,7 +22,6 @@ knex.schema
         table.string('name')
         table.string('email')
         table.string('show')
-        table.string('numPeople')
         table.string('created')
         table.timestamps(true, true)
       })
@@ -41,8 +40,8 @@ knex.schema
         table.string('name')
         table.string('date')
         table.string('time')
-        table.string('totalSeats')
-        table.string('freeSeats')
+        table.string('rows')
+        table.string('seats')
         table.timestamps(true, true)
       })
     }
@@ -60,6 +59,7 @@ knex.schema
         table.string('row')
         table.string('seat')
         table.string('ticket')
+        table.string('show')
         table.timestamps(true, true)
       })
     }
@@ -74,6 +74,29 @@ knex('shows')
   .then((shows) => {
     if (shows.length === 0) {
       return knex('shows').insert(config.shows)
+    }
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+
+// Populate seats if empty
+knex('seats')
+  .select()
+  .then((seats) => {
+    if (seats.length === 0) {
+      // Randomly assign seats
+      const seats = []
+      // Add 5 seats for show 1
+      for (let i = 1; i <= 5; i++) {
+        seats.push({ row: 1, seat: i, show: 1 })
+      }
+      // Add 5 seats for show 2
+      for (let i = 1; i <= 5; i++) {
+        seats.push({ row: 2, seat: i, show: 2 })
+      }
+
+      return knex('seats').insert(seats)
     }
   })
   .catch((error) => {
@@ -112,7 +135,7 @@ app.use('/api', (request, response, next) => {
 })
 
 // Get all tickets
-app.get('/api/ticket', async (request, response) => {
+app.get('/api/tickets', async (request, response) => {
   try {
     // Check if the password is correct
     const password = request.headers['x-password']
@@ -120,9 +143,23 @@ app.get('/api/ticket', async (request, response) => {
       return response.status(401).json({ error: 'Unauthorized' })
     }
     const tickets = await knex.select().table('tickets')
-    response.json({
+    return response.json({
       message: 'Tickets gefunden',
       tickets,
+    })
+  } catch (error) {
+    console.error(error)
+    return response.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+// Get all shows with seats
+app.get('/api/shows', async (request, response) => {
+  try {
+    const shows = await knex.select().table('shows')
+    return response.json({
+      message: 'Shows gefunden',
+      shows,
     })
   } catch (error) {
     console.error(error)
@@ -130,11 +167,14 @@ app.get('/api/ticket', async (request, response) => {
   }
 })
 
-// Get all shows
-app.get('/api/show', async (request, response) => {
+app.get('/api/seats/:showId', async (request, response) => {
   try {
-    const shows = await knex.select().table('shows')
-    response.json(shows)
+    const { showId } = request.params
+    const seats = await knex('seats').where({ show: showId })
+    response.json({
+      message: 'Sitzpläte gefunden',
+      seats,
+    })
   } catch (error) {
     console.error(error)
     response.status(500).json({ error: 'Internal server error' })
@@ -142,13 +182,13 @@ app.get('/api/show', async (request, response) => {
 })
 
 // Create a new ticket
-app.post('/api/ticket', async (request, response) => {
+app.post('/api/tickets', async (request, response) => {
   try {
     const {
       name,
       email,
       show,
-      numPeople,
+      seats,
       ['cf-turnstile-response']: token,
     } = request.body
 
@@ -162,14 +202,21 @@ app.post('/api/ticket', async (request, response) => {
     if (!show) {
       return response.status(400).json({ error: 'Show fehlt' })
     }
-    if (!numPeople) {
-      return response.status(400).json({ error: 'Anzahl Personen fehlt' })
+    if (!seats) {
+      return response.status(400).json({ error: 'Sitzpläte fehlen' })
     }
-    // numPeople should be 1 - 5
-    if (numPeople < 1 || numPeople > 5) {
+    let parsedSeats
+    try {
+      parsedSeats = JSON.parse(seats)
+    } catch (error) {
+      return response.status(400).json({ error: 'Sitzpläte ungültig' })
+    }
+
+    // parsedSeats should be 1 - 5
+    if (parsedSeats.length < 1 || parsedSeats.length > 5) {
       return response
         .status(400)
-        .json({ error: 'Anzahl Personen muss zwischen 1 und 5 liegen' })
+        .json({ error: 'Anzahl Sitzpläte muss zwischen 1 und 5 liegen' })
     }
 
     const ip = request.headers['cf-connecting-ip'] || request.ip
@@ -202,23 +249,34 @@ app.post('/api/ticket', async (request, response) => {
       return response.status(400).json({ error: 'Email bereits verwendet' })
     }
 
-    // Check if there are enough free seats
-    const freeSeats = shows[0].freeSeats
-    if (freeSeats < numPeople) {
-      return response.status(400).json({ error: 'Nicht genügend freie Plätze' })
+    // Check if the seats are already booked
+    const bookedSeats = await knex('seats').where({ show })
+    for (const parsedSeat of parsedSeats) {
+      let [row, seat] = parsedSeat.split('-')
+      row--
+      seat--
+      const seatExists = bookedSeats.some(
+        (bookedSeat) => bookedSeat.row === row && bookedSeat.seat === seat
+      )
+      if (seatExists) {
+        return response.status(400).json({ error: 'Sitzplatz bereits belegt' })
+      }
     }
 
     // Create ticket
     const created = new Date().toISOString()
     // Generate a random ticket ID
     const ticketId = Math.random().toString(36).substr(2, 9)
-    const ticket = { name, email, show, numPeople, created, ticketId }
+    const ticket = { name, email, show, created, ticketId }
     const [id] = await knex('tickets').insert(ticket)
 
-    // Update free seats
-    await knex('shows')
-      .where({ id: show })
-      .update({ freeSeats: parseInt(freeSeats) - parseInt(numPeople) })
+    // Create seats
+    for (const parsedSeat of parsedSeats) {
+      let [row, seat] = parsedSeat.split('-')
+      row--
+      seat--
+      await knex('seats').insert({ row, seat, ticket: id, show })
+    }
 
     await transporter.sendMail({
       from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
@@ -228,8 +286,8 @@ app.post('/api/ticket', async (request, response) => {
         NAME: ticket.name,
         DATE: shows[0].date,
         TIME: shows[0].time,
-        NUMPEOPLE: ticket.numPeople,
         INFO_LINK: `${config.url}/info.html#${ticket.ticketId}`,
+        SEATS: parsedSeats.join(', '),
       }),
     })
 
@@ -241,7 +299,7 @@ app.post('/api/ticket', async (request, response) => {
 })
 
 // Delete a ticket
-app.delete('/api/ticket/:ticketId', async (request, response) => {
+app.delete('/api/tickets/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     // Check if the ticket exists
@@ -250,15 +308,10 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
     await knex('tickets').where({ ticketId }).del()
-    // Update free seats
+
+    // Free the seats
     const ticket = tickets[0]
-    const shows = await knex('shows').where({ id: ticket.show })
-    const show = shows[0]
-    await knex('shows')
-      .where({ id: ticket.show })
-      .update({
-        freeSeats: parseInt(show.freeSeats) + parseInt(ticket.numPeople),
-      })
+    await knex('seats').where({ ticket: ticket.id }).del()
 
     await transporter.sendMail({
       from: `"Kolpingjungen Ramsen" <${config.emailUser}>`,
@@ -268,7 +321,6 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
         NAME: ticket.name,
         DATE: show.date,
         TIME: show.time,
-        NUMPEOPLE: ticket.numPeople,
         INFO_LINK: config.url,
       }),
     })
@@ -276,12 +328,14 @@ app.delete('/api/ticket/:ticketId', async (request, response) => {
     response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
     console.error(error)
-    response.status(500).json({ error: 'Internal server error' })
+    response
+      .status(500)
+      .json({ error: 'Internal server error', message: error })
   }
 })
 
 // Get a single ticket
-app.get('/api/ticket/:ticketId', async (request, response) => {
+app.get('/api/tickets/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     const ticket = await knex('tickets').where({ ticketId }).first()

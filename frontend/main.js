@@ -16,15 +16,32 @@ function bookTicket(event) {
     return displayError('Bitte bestätige, dass du kein Roboter bist.')
   }
 
-  //   Disable submit button
+  // Get selected seats
+  const seats = []
+  const selectedSeats = document.querySelectorAll('.seat.selected')
+  selectedSeats.forEach((seat) => {
+    seats.push(seat.innerText)
+  })
+
+  if (seats.length === 0) {
+    return displayError('Bitte wähle mindestens einen Sitzplatz aus.')
+  }
+
+  // Check if the user has selected more than 5 seats
+  if (seats.length > 5) {
+    return displayError('Du kannst maximal 5 Sitzplätze auswählen.')
+  }
+
+  // Disable submit button
   const submitButton = document.getElementById('submit')
   submitButton.disabled = true
 
   //   Send form data to backend
   const formData = new FormData(event.target)
+  formData.append('seats', JSON.stringify(seats))
   const data = Object.fromEntries(formData.entries())
   console.log(data)
-  fetch(`${API_URL}/ticket`, {
+  fetch(`${API_URL}/tickets`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -78,7 +95,7 @@ function stornoTicket(event) {
   // Send form data to backend
   const formData = new FormData(event.target)
   const data = Object.fromEntries(formData.entries())
-  fetch(`${API_URL}/ticket/${data.ticketId}`, {
+  fetch(`${API_URL}/tickets/${data.ticketId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -124,7 +141,7 @@ function getTicket(event) {
 
   // Send form data to backend
   const ticketId = document.getElementById('ticketId').value
-  fetch(`${API_URL}/ticket/${ticketId}`, {
+  fetch(`${API_URL}/tickets/${ticketId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -171,7 +188,7 @@ function getTickets(event) {
 
   // Send form data to backend
   const password = document.getElementById('password').value
-  fetch(`${API_URL}/ticket`, {
+  fetch(`${API_URL}/tickets`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -207,27 +224,22 @@ function getTickets(event) {
     })
 }
 
-let seatData = {
-  rows: 7,
-  seats: 10,
-  booked: {
-    '0-2': true,
-    '3-5': true,
-  },
-}
-
+let bookedSeats = []
 const seatCounterNumber = document.getElementById('seatCounterNumber')
-function displaySeats(data) {
-  const seats = document.getElementById('seatContainer')
-  seats.innerHTML = '<div class="grid"><div class="s12 stage">Bühne</div></div>'
 
-  for (let row = 0; row < data.rows; row++) {
+function displaySeats(show, seats) {
+  console.log(show, seats)
+  const seatContainer = document.getElementById('seatContainer')
+  seatContainer.innerHTML =
+    '<div class="grid"><div class="s12 stage">Bühne</div></div>'
+
+  for (let row = 0; row < parseInt(show.rows); row++) {
     const rowElement = document.createElement('div')
     rowElement.classList.add('grid', 'no-space')
-    const spacer = 12 - data.seats
-    for (let seat = 0; seat < data.seats; seat++) {
+    const spacer = 12 - show.seats
+    for (let seat = 0; seat < parseInt(show.seats); seat++) {
       // Spacer in the middle
-      if (seat === Math.floor(data.seats / 2)) {
+      if (seat === Math.floor(show.seats / 2)) {
         for (let i = 0; i < spacer; i++) {
           const spacerElement = document.createElement('div')
           spacerElement.classList.add()
@@ -236,13 +248,15 @@ function displaySeats(data) {
       }
       const seatElement = document.createElement('div')
       seatElement.classList.add('seat')
-      if (data.booked[`${row}-${seat}`]) {
+      if (
+        seats.find((seatData) => seatData.row == row && seatData.seat == seat)
+      ) {
         seatElement.classList.add('booked')
       }
       seatElement.addEventListener('click', () => {
         if (seatElement.classList.contains('selected')) {
           seatElement.classList.remove('selected')
-          delete data.booked[`${row}-${seat}`]
+          bookedSeats.splice(bookedSeats.indexOf(seatElement.innerText), 1)
           seatCounterNumber.innerText =
             document.querySelectorAll('.seat.selected').length
           if (seatCounterNumber.innerText <= 5) {
@@ -255,10 +269,9 @@ function displaySeats(data) {
             return
           }
           seatElement.classList.add('selected')
-          data.booked[`${row}-${seat}`] = true
+          bookedSeats.push(seatElement.innerText)
           seatCounterNumber.innerText =
             document.querySelectorAll('.seat.selected').length
-          console.log('red')
           if (seatCounterNumber.innerText >= 5) {
             seatCounterNumber.parentElement.classList.add('yellow')
           }
@@ -267,29 +280,43 @@ function displaySeats(data) {
       seatElement.innerHTML = `${row + 1}-${seat + 1}`
       rowElement.appendChild(seatElement)
     }
-    seats.appendChild(rowElement)
+    seatContainer.appendChild(rowElement)
   }
 }
-displaySeats(seatData)
+
+document.getElementById('show').addEventListener('change', async (event) => {
+  const data = await getShows()
+  const show = data.shows.find((show) => show.id == event.target.value)
+  const { seats } = await getSeats(show.id)
+  displaySeats(show, seats)
+})
 
 async function getShows() {
   try {
-    const response = await fetch(`${API_URL}/show`)
-    const shows = await response.json()
-    return shows
+    const response = await fetch(`${API_URL}/shows`)
+    return await response.json()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function getSeats(showId) {
+  try {
+    const response = await fetch(`${API_URL}/seats/${showId}`)
+    return await response.json()
   } catch (error) {
     console.error(error)
   }
 }
 
 async function fillShowSelect() {
-  const shows = await getShows()
+  const { shows } = await getShows()
   const select = document.getElementById('show')
   shows.forEach((show) => {
     const option = document.createElement('option')
     option.value = show.id
     // [${freeSeats} freie Plätze] ${name} (${date} ${time})
-    option.text = `[${show.freeSeats} freie Plätze] ${show.name} (${show.date} ${show.time})`
+    option.text = `${show.name} (${show.date} ${show.time})`
     if (show.freeSeats <= 0) {
       option.disabled = true
     }

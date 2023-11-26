@@ -63,7 +63,7 @@
           </div>
           <h2><i class="extra">event_seat</i>Platzauswahl</h2>
           <h3 id="seatCounter">
-            <span id="seatCounterNumber">0</span> / 5 Plätze gewählt
+            <span id="seatCounterNumber">0</span>/5 Plätze gewählt
           </h3>
           <div id="seatContainer"></div>
           <div class="space"></div>
@@ -71,10 +71,10 @@
             Reservieren
           </button>
           <div class="space"></div>
-          <!-- 0x4AAAAAAAMmiOHBE5aRG9yx -->
+          <!-- data-sitekey="0x4AAAAAAAMmiOHBE5aRG9yx" -->
           <div
             class="cf-turnstile"
-            data-sitekey="0x4AAAAAAAMmiOHBE5aRG9yx"
+            data-sitekey="1x00000000000000000000AA"
             data-callback="captchaCallback"
             data-theme="light"
           ></div>
@@ -95,8 +95,12 @@
     ></script>
     <script>
       fillShowSelect()
-
-      //
+        .then(() => {
+          document.getElementById('show').disabled = false
+        })
+        .catch((err) => {
+          console.error(err)
+        })
     </script>
   </body>
 </html>
