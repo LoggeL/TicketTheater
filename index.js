@@ -80,29 +80,6 @@ knex('shows')
     console.error(error)
   })
 
-// Populate seats if empty
-knex('seats')
-  .select()
-  .then((seats) => {
-    if (seats.length === 0) {
-      // Randomly assign seats
-      const seats = []
-      // Add 5 seats for show 1
-      for (let i = 1; i <= 5; i++) {
-        seats.push({ row: 1, seat: i, show: 1 })
-      }
-      // Add 5 seats for show 2
-      for (let i = 1; i <= 5; i++) {
-        seats.push({ row: 2, seat: i, show: 2 })
-      }
-
-      return knex('seats').insert(seats)
-    }
-  })
-  .catch((error) => {
-    console.error(error)
-  })
-
 const mailConfig = {
   host: 'smtp.gmail.com',
   port: 465,

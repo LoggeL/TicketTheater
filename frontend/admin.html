@@ -51,7 +51,7 @@
       <article id="ticketResult" style="display: none"></article>
 
       <div class="snackbar error" id="snackbarError"></div>
-      <div class="snackbar primary" id="snackbarSuccess"></div>
+      <div class="snackbar green" id="snackbarSuccess"></div>
     </main>
 
     <script
@@ -96,7 +96,7 @@
           // Seats
           const td = document.createElement('td')
           const ticketSeats = seats.filter(s => s.ticketId == ticket.ticketId)
-          td.innerText = ticketSeats.map(s => `${s.row + 1}-${s.seat + 1}`)
+          td.innerText = ticketSeats.map(s => `${parseInt(s.row) + 1}-${parseInt(s.seat) + 1}`).join(', ')
           tr.append(td)
           tbody.appendChild(tr)
         }
