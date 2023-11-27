@@ -235,7 +235,7 @@ app.post('/api/tickets', async (request, response) => {
       row--
       seat--
       const seatExists = bookedSeats.some(
-        (bookedSeat) => bookedSeat.row === row && bookedSeat.seat === seat
+        (bookedSeat) => bookedSeat.row == row && bookedSeat.seat == seat
       )
       if (seatExists) {
         return response.status(400).json({ error: 'Sitzplatz bereits belegt' })
@@ -269,6 +269,8 @@ app.post('/api/tickets', async (request, response) => {
         SEATS: parsedSeats.join(', '),
       }),
     })
+
+    console.log('Ticket created', ticketId)
 
     return response.json({ message: 'Ticket erstellt', ticketId })
   } catch (error) {
@@ -307,6 +309,8 @@ app.delete('/api/tickets/:ticketId', async (request, response) => {
         INFO_LINK: config.url,
       }),
     })
+
+    console.log('Ticket deleted', ticketId)
 
     return response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
