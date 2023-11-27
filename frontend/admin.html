@@ -61,7 +61,9 @@
     <script src="main.js"></script>
 
     <script>
-      function displayTickets(tickets) {
+      function displayTickets(data) {
+        const {tickets, seats} = data
+
         const ticketResult = document.getElementById('ticketResult')
         // Clear ticket result
         ticketResult.innerHTML = ''
@@ -76,6 +78,9 @@
           th.textContent = key
           tr.appendChild(th)
         }
+        const th = document.createElement('th')
+        th.innerText = "Seats"
+        tr.append(th)
         thead.appendChild(tr)
         table.appendChild(thead)
 
@@ -88,6 +93,11 @@
             td.textContent = ticket[key]
             tr.appendChild(td)
           }
+          // Seats
+          const td = document.createElement('td')
+          const ticketSeats = seats.filter(s => s.ticketId == ticket.ticketId)
+          td.innerText = ticketSeats.map(s => `${s.row + 1}-${s.seat + 1}`)
+          tr.append(td)
           tbody.appendChild(tr)
         }
 

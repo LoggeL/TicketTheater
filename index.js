@@ -134,7 +134,7 @@ app.use('/api', (request, response, next) => {
   next()
 })
 
-// Get all tickets
+// Get all tickets (admin endpoint)
 app.get('/api/tickets', async (request, response) => {
   try {
     // Check if the password is correct
@@ -143,9 +143,11 @@ app.get('/api/tickets', async (request, response) => {
       return response.status(401).json({ error: 'Unauthorized' })
     }
     const tickets = await knex.select().table('tickets')
+    const seats = await knex.select().table('seats')
     return response.json({
       message: 'Tickets gefunden',
       tickets,
+      seats
     })
   } catch (error) {
     console.error(error)
@@ -339,12 +341,14 @@ app.get('/api/tickets/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     const ticket = await knex('tickets').where({ ticketId }).first()
+    const seats = await knex('setas').where({ ticketId })
     if (!ticket) {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
     response.json({
       message: 'Ticket gefunden',
       ticket,
+      seats
     })
   } catch (error) {
     console.error(error)

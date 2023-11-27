@@ -156,7 +156,7 @@ function getTicket(event) {
             displayError(data.error)
           } else if (data.message) {
             displaySuccess(data.message)
-            displayTicketData(data.ticket)
+            displayTicketData(data)
           } else {
             displayError(
               'Beim Senden deiner Nachricht ist ein Fehler aufgetreten.'
@@ -204,7 +204,7 @@ function getTickets(event) {
             displayError(data.error)
           } else if (data.message) {
             displaySuccess(data.message)
-            displayTickets(data.tickets)
+            displayTickets(data)
           } else {
             displayError(
               'Beim Senden deiner Nachricht ist ein Fehler aufgetreten.'

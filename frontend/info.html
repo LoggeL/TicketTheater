@@ -64,10 +64,13 @@
         if (ticketId) {
           // Set ticket id
           document.getElementById('ticketId').value = ticketId
+          document.querySelector('button[type=submit]').click()
         }
       }
 
-      function displayTicketData(ticket) {
+      function displayTicketData(data) {
+        const {ticket, setas} = data
+
         const ticketResult = document.getElementById('ticketResult')
         ticketResult.style.display = 'block'
         // Disable submit button
@@ -107,7 +110,7 @@
         infoDiv.appendChild(p3)
 
         const p4 = document.createElement('p')
-        p4.textContent = `Anzahl Personen: ${ticket.numPeople}`
+        p4.textContent = `Plätze: ${seats.map(s => `${s.row + 1}-${s.seat + 1}`).join(', ')}`
         infoDiv.appendChild(p4)
 
         const p5 = document.createElement('p')
