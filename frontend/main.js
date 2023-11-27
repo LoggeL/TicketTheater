@@ -110,6 +110,9 @@ function stornoTicket(event) {
             displayError(data.error)
           } else if (data.message) {
             displaySuccess(data.message)
+            setTimeout(() => {
+              window.location.href = `index.html`
+            }, 3000)
           } else {
             displayError(
               'Beim Senden deiner Nachricht ist ein Fehler aufgetreten.'
@@ -227,7 +230,7 @@ function getTickets(event) {
 let bookedSeats = []
 const seatCounterNumber = document.getElementById('seatCounterNumber')
 
-function displaySeats(show, seats) {
+function displaySeats(show, seats, interactive = true) {
   console.log(show, seats)
   const seatContainer = document.getElementById('seatContainer')
   seatContainer.innerHTML =
@@ -254,6 +257,9 @@ function displaySeats(show, seats) {
         seatElement.classList.add('booked')
       }
       seatElement.addEventListener('click', () => {
+        if (!interactive) {
+          return
+        }
         if (seatElement.classList.contains('selected')) {
           seatElement.classList.remove('selected')
           bookedSeats.splice(bookedSeats.indexOf(seatElement.innerText), 1)
@@ -284,7 +290,7 @@ function displaySeats(show, seats) {
   }
 }
 
-document.getElementById('show').addEventListener('change', async (event) => {
+document.getElementById('show')?.addEventListener('change', async (event) => {
   const data = await getShows()
   const show = data.shows.find((show) => show.id == event.target.value)
   const { seats } = await getSeats(show.id)

@@ -58,7 +58,7 @@ knex.schema
         table.increments('id').primary()
         table.string('row')
         table.string('seat')
-        table.string('ticket')
+        table.string('ticketId')
         table.string('show')
         table.timestamps(true, true)
       })
@@ -147,7 +147,7 @@ app.get('/api/tickets', async (request, response) => {
     return response.json({
       message: 'Tickets gefunden',
       tickets,
-      seats
+      seats,
     })
   } catch (error) {
     console.error(error)
@@ -277,7 +277,7 @@ app.post('/api/tickets', async (request, response) => {
       let [row, seat] = parsedSeat.split('-')
       row--
       seat--
-      await knex('seats').insert({ row, seat, ticket: id, show })
+      await knex('seats').insert({ row, seat, ticketId, show })
     }
 
     await transporter.sendMail({
@@ -305,15 +305,19 @@ app.delete('/api/tickets/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     // Check if the ticket exists
-    const tickets = await knex('tickets').where({ ticketId })
-    if (tickets.length === 0) {
+    const ticket = await knex('tickets').where({ ticketId }).first()
+    if (!ticket) {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
+    const show = await knex('shows').where({ id: ticket.show }).first()
+    if (!show) {
+      return response.status(400).json({ error: 'Show existiert nicht' })
+    }
+
     await knex('tickets').where({ ticketId }).del()
 
     // Free the seats
-    const ticket = tickets[0]
-    await knex('seats').where({ ticket: ticket.id }).del()
+    await knex('seats').where({ ticketId }).del()
 
     await transporter.sendMail({
       from: `"Kolpingjungen Ramsen" <${config.emailUser}>`,
@@ -327,7 +331,7 @@ app.delete('/api/tickets/:ticketId', async (request, response) => {
       }),
     })
 
-    response.json({ ticketId, message: 'Ticket gelöscht' })
+    return response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
     console.error(error)
     response
@@ -341,14 +345,16 @@ app.get('/api/tickets/:ticketId', async (request, response) => {
   try {
     const { ticketId } = request.params
     const ticket = await knex('tickets').where({ ticketId }).first()
-    const seats = await knex('setas').where({ ticketId })
     if (!ticket) {
       return response.status(400).json({ error: 'Ticket existiert nicht' })
     }
-    response.json({
+    const seats = await knex('seats').where({ ticketId })
+    const show = await knex('shows').where({ id: ticket.show }).first()
+    return response.json({
       message: 'Ticket gefunden',
       ticket,
-      seats
+      seats,
+      show,
     })
   } catch (error) {
     console.error(error)

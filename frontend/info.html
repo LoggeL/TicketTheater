@@ -11,6 +11,17 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="main.css" />
+    <style>
+      .seat {
+        cursor: pointer;
+        background-color: #e0e0e0;
+        pointer-events: none;
+      }
+
+      .seat.booked {
+        background-color: var(--primary);
+      }
+    </style>
   </head>
 
   <body>
@@ -45,6 +56,9 @@
       </form>
 
       <article id="ticketResult" style="display: none"></article>
+      <article>
+        <div id="seatContainer"></div>
+      </article>
 
       <div class="snackbar error" id="snackbarError"></div>
       <div class="snackbar primary" id="snackbarSuccess"></div>
@@ -69,7 +83,7 @@
       }
 
       function displayTicketData(data) {
-        const {ticket, setas} = data
+        const { ticket, seats, show } = data
 
         const ticketResult = document.getElementById('ticketResult')
         ticketResult.style.display = 'block'
@@ -110,7 +124,9 @@
         infoDiv.appendChild(p3)
 
         const p4 = document.createElement('p')
-        p4.textContent = `Plätze: ${seats.map(s => `${s.row + 1}-${s.seat + 1}`).join(', ')}`
+        p4.textContent = `Plätze: ${seats
+          .map((s) => `${parseInt(s.row) + 1}-${parseInt(s.seat) + 1}`)
+          .join(', ')}`
         infoDiv.appendChild(p4)
 
         const p5 = document.createElement('p')
@@ -152,6 +168,8 @@
 
         const article = document.createElement('article')
         article.classList.add('no-padding', 'round')
+
+        displaySeats(show, seats, false)
       }
     </script>
   </body>
