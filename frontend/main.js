@@ -1,4 +1,5 @@
 const API_URL = 'api'
+const unlockDate = new Date('2023-11-29T20:00:00+02:00')
 
 function bookTicket(event) {
   event.preventDefault()
@@ -350,7 +351,19 @@ function displaySuccess(e) {
   }, 5000)
 }
 
+const submitButton = document.getElementById('submit')
 function captchaCallback() {
-  const submitButton = document.getElementById('submit')
+  if (unlockDate > new Date()) {
+    submitButton.disabled = true
+    return
+  }
   submitButton.disabled = false
+}
+
+if (unlockDate > new Date()) {
+  setInterval(() => {
+    const diff = unlockDate - new Date()
+    const formattedTime = new Date(diff).toISOString().substr(11, 8)
+    submitButton.innerText = `Countdown: (${formattedTime})`
+  }, 1000)
 }
