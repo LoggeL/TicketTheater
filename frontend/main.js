@@ -365,5 +365,8 @@ if (unlockDate > new Date()) {
     const diff = unlockDate - new Date()
     const formattedTime = new Date(diff).toISOString().substr(11, 8)
     submitButton.innerText = `Countdown: (${formattedTime})`
+    if (diff <= 0) {
+      window.location.reload(true)
+    }
   }, 1000)
 }
