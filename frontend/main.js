@@ -1,5 +1,5 @@
 const API_URL = 'api'
-const unlockDate = new Date('2023-11-29T20:00:00+02:00')
+const unlockDate = new Date('2023-11-29T21:00:00+02:00')
 
 function bookTicket(event) {
   event.preventDefault()
