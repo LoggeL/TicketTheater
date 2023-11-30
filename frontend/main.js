@@ -292,6 +292,7 @@ function displaySeats(show, seats, interactive = true) {
 }
 
 document.getElementById('show')?.addEventListener('change', async (event) => {
+  document.getElementById('seatContainer').innerHTML = ''
   const data = await getShows()
   const show = data.shows.find((show) => show.id == event.target.value)
   const { seats } = await getSeats(show.id)
