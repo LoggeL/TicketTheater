@@ -333,6 +333,12 @@ async function fillShowSelect() {
           option.disabled = true
         }
         select.appendChild(option)
+        // If all options are disabled, show a message
+        if (Array.from(select.options).every((option) => option.disabled)) {
+          select.innerHTML =
+            '<option value="" disabled selected>Alle Vorstellungen sind ausgebucht.</option>'
+          document.getElementById('allBooked').style.display = 'block'
+        }
       })
   })
 }
