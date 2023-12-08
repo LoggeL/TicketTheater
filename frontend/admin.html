@@ -46,6 +46,10 @@
           <i>info</i>
           Abfragen
         </button>
+        <button class="" id="export" type="button" onclick="exportTickets()" style="display: none">
+          <i>save_alt</i>
+          Exportieren (CSV)
+        </button>
       </form>
 
       <article id="ticketResult" style="display: none"></article>
@@ -104,6 +108,25 @@
         table.appendChild(tbody)
         ticketResult.appendChild(table)
         ticketResult.style.display = 'block'
+
+        // Show export button
+        document.getElementById('export').style.display = 'inline-flex'
+      }
+
+      // HTML table to CSV
+      function exportTickets() {
+        const table = document.querySelector('#ticketResult table')
+        const rows = Array.from(table.querySelectorAll('tr'))
+        const csv = "sep=;\n" + rows.map(row => {
+          const columns = Array.from(row.querySelectorAll('th, td'))
+          return columns.map(column => `"${column.innerText}"`).join(';')
+        }).join('\n')
+        const blob = new Blob([csv], {type: 'text/csv'})
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'tickets.csv'
+        a.click()
       }
     </script>
   </body>
