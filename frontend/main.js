@@ -338,6 +338,10 @@ async function fillShowSelect() {
           select.innerHTML =
             '<option value="" disabled selected>Alle Vorstellungen sind ausgebucht.</option>'
           document.getElementById('allBooked').style.display = 'block'
+        } else {
+          select.innerHTML =
+            '<option value="" disabled selected>Vorstellung wählen</option>'
+          document.getElementById('allBooked').style.display = 'none'
         }
       })
   })
