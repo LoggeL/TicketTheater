@@ -320,28 +320,34 @@ async function getSeats(showId) {
 async function fillShowSelect() {
   const { shows } = await getShows()
   const select = document.getElementById('show')
+  let seatPromises = []
   shows.forEach((show) => {
     const option = document.createElement('option')
     option.value = show.id
-    fetch(`${API_URL}/seats/${show.id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const freeSeats = show.seats * show.rows - data.seats.length
-        // [${freeSeats} freie Plätze] ${name} (${date} ${time})
-        option.text = `${show.name} (${show.date} ${show.time}) [${freeSeats} freie Plätze]`
-        if (freeSeats <= 0) {
-          option.disabled = true
-        }
-        select.appendChild(option)
-        // If all options are disabled, show a message
-        if (Array.from(select.options).every((option) => option.disabled)) {
-          select.options[0].text = 'Alle Vorstellungen sind ausgebucht.'
-          document.getElementById('allBooked').style.display = 'block'
-        } else {
-          select.options[0].text = 'Bitte wähle eine Vorstellung aus.'
-          document.getElementById('allBooked').style.display = 'none'
-        }
-      })
+    seatPromises.push(
+      fetch(`${API_URL}/seats/${show.id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const freeSeats = show.seats * show.rows - data.seats.length
+          // [${freeSeats} freie Plätze] ${name} (${date} ${time})
+          option.text = `${show.name} (${show.date} ${show.time}) [${freeSeats} freie Plätze]`
+          if (freeSeats <= 0) {
+            option.disabled = true
+          }
+          select.appendChild(option)
+        })
+    )
+  })
+  Promise.all(seatPromises).then(() => {
+    // If all options are disabled, show a message
+    if (Array.from(select.options).every((option) => option.disabled)) {
+      select.options[0].text = 'Alle Vorstellungen sind ausgebucht.'
+      document.getElementById('allBooked').style.display = 'block'
+    } else {
+      select.options[0].text = 'Bitte wähle eine Vorstellung aus.'
+      document.getElementById('allBooked').style.display = 'none'
+    }
+    select.options[0].selected = true
   })
 }
 
