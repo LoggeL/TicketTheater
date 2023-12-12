@@ -5,6 +5,7 @@
     "mail": "someMail@example.com",
     "password": "somePassword",
     "server": "someServer",
+    "discordWebhook": "https://canary.discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW",
     "adminPassword": "someAdminPassword",
         "shows": [
         {

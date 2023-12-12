@@ -272,6 +272,16 @@ app.post('/api/tickets', async (request, response) => {
 
     console.log('Ticket created', ticketId)
 
+    // Notify via discord webhook
+    await $fetch(config.discordWebhook, {
+      body: {
+        content: `Ein Ticket wurde erstellt. Show: ${
+          shows[0].name
+        }, Sitzplätze: ${parsedSeats.join(', ')}`,
+      },
+      method: 'POST',
+    })
+
     return response.json({ message: 'Ticket erstellt', ticketId })
   } catch (error) {
     console.error(error)
@@ -311,6 +321,14 @@ app.delete('/api/tickets/:ticketId', async (request, response) => {
     })
 
     console.log('Ticket deleted', ticketId)
+
+    // Notify via discord webhook
+    await $fetch(config.discordWebhook, {
+      body: {
+        content: `Ein Ticket wurde storniert. Show: ${show.name}`,
+      },
+      method: 'POST',
+    })
 
     return response.json({ ticketId, message: 'Ticket gelöscht' })
   } catch (error) {
