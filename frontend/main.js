@@ -6,6 +6,14 @@ const countdownNotice = document.getElementById('countdownNotice')
 if (unlockDate > new Date()) {
   countdownNotice.style.display = 'block'
   countdownNotice.innerText = `Tickets erst ab ${unlockDate.toLocaleString()} verfügbar.`
+
+  // Disable all forms
+  document.querySelectorAll('form').forEach((form) => {
+    form.querySelectorAll('input, button, select').forEach((element) => {
+      element.disabled = true
+      element.style.cursor = 'not-allowed'
+    })
+  })
 }
 
 function bookTicket(event) {
@@ -426,4 +434,12 @@ if (unlockDate > new Date()) {
       window.location.reload(true)
     }
   }, 1000)
+} else {
+  fillShowSelect()
+    .then(() => {
+      document.getElementById('show').disabled = false
+    })
+    .catch((err) => {
+      console.error(err)
+    })
 }
