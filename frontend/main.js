@@ -1,5 +1,12 @@
 const API_URL = 'api'
-const unlockDate = new Date('2023-11-29T21:00:00+02:00')
+const unlockDate = new Date('2024-12-08T21:00:00+02:00')
+
+const countdownNotice = document.getElementById('countdownNotice')
+
+if (unlockDate > new Date()) {
+  countdownNotice.style.display = 'block'
+  countdownNotice.innerText = `Tickets erst ab ${unlockDate.toLocaleString()} verfügbar.`
+}
 
 function bookTicket(event) {
   event.preventDefault()
@@ -383,7 +390,15 @@ function captchaCallback() {
 if (unlockDate > new Date()) {
   setInterval(() => {
     const diff = unlockDate - new Date()
-    const formattedTime = new Date(diff).toISOString().substr(11, 8)
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+    const formattedTime = `${days.toString().padStart(2, '0')}:${hours
+      .toString()
+      .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`
     submitButton.innerText = `Countdown: (${formattedTime})`
     if (diff <= 0) {
       window.location.reload(true)

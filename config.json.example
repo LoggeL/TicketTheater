@@ -10,14 +10,14 @@
         "shows": [
         {
             "name": "Aufführung 1",
-            "date": "2023-12-29",
+            "date": "2024-12-29",
             "time": "18:00",
             "totalSeats": "50",
             "freeSeats": "50"
         },
         {
             "name": "Aufführung 2",
-            "date": "2023-12-29",
+            "date": "2024-12-29",
             "time": "20:00",
             "totalSeats": "50",
             "freeSeats": "50"
@@ -25,11 +25,11 @@
     ],
     "mails": {
         "reservation": {
-            "subject": "Deine Reservierung für das Winterstück 2023",
+            "subject": "Deine Reservierung für das Winterstück 2024",
             "body": "Hallo {NAME},\n\nvielen Dank für deine Reservierung. Du hast für den {DATE} um {TIME} {NUMPEOPLE} Plätze reserviert. Vor Ort gibt es freie Platzwahl. Einlass ist jeweils eine halbe Stunde vor Vorstellungsbeginn.\n\nWir freuen uns auf dein Kommen\n\nDie Kolping-Theatergruppe\n\nP.S.: Solltest du an dem Termin nicht können, kannst du deine Reservierung über folgenden Link stornieren: {INFO_LINK}"
         },
         "strono": {
-            "subject": "Deine Stornierung für das Winterstück 2023",
+            "subject": "Deine Stornierung für das Winterstück 2024",
             "body": "Hallo {NAME},\n\nhiermit bestätigen wir deine Stornierung. Du hast für den {DATE} um {TIME} {NUMPEOPLE} Plätze storniert.\n\nWir hoffen, dass du zu einem anderen Termin kommen kannst.\n\nDie Kolping-Theatergruppe"
         }
     }
