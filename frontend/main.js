@@ -299,7 +299,8 @@ function displaySeats(show, seats, interactive = true) {
 }
 
 document.getElementById('show')?.addEventListener('change', async (event) => {
-  document.getElementById('seatContainer').innerHTML = ''
+  document.getElementById('seatContainer').innerHTML =
+    'Lade Sitzplatbelegung...'
   const data = await getShows()
   const show = data.shows.find((show) => show.id == event.target.value)
   const { seats } = await getSeats(show.id)
@@ -355,6 +356,27 @@ async function fillShowSelect() {
       document.getElementById('allBooked').style.display = 'none'
     }
     select.options[0].selected = true
+
+    // Sort options by date
+    const sortedOptions = Array.from(select.options).sort((a, b) => {
+      if (a.text < b.text) {
+        return -1
+      }
+      if (a.text > b.text) {
+        return 1
+      }
+      return 0
+    })
+
+    // Remove all options
+    while (select.firstChild) {
+      select.removeChild(select.firstChild)
+    }
+
+    // Add sorted options
+    sortedOptions.forEach((option) => {
+      select.appendChild(option)
+    })
   })
 }
 
