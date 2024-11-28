@@ -1,5 +1,5 @@
 const API_URL = 'api'
-const unlockDate = new Date('2024-12-08T21:00:00+02:00')
+const unlockDate = new Date('2024-10-04T13:00:00+02:00')
 
 const countdownNotice = document.getElementById('countdownNotice')
 
