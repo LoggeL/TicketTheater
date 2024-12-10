@@ -91,3 +91,22 @@ main {
 .seat.selected {
   background-color: #ffa726;
 }
+
+.progress {
+  background-color: #e0e0e0;
+  height: 16px;
+}
+
+.progress div {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.progress .indeterminate {
+  background-color: var(--primary);
+}
+
+.field:has(.progress) {
+  margin-top: 1rem;
+  margin-bottom: 0rem;
+}

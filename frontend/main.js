@@ -337,7 +337,11 @@ async function fillShowSelect() {
   const { shows } = await getShows()
   const select = document.getElementById('show')
   let seatPromises = []
+  let totalSeats = 0
+  let totalBookedSeats = 0
+
   shows.forEach((show) => {
+    totalSeats += show.seats * show.rows
     const option = document.createElement('option')
     option.value = show.id
     seatPromises.push(
@@ -345,7 +349,7 @@ async function fillShowSelect() {
         .then((response) => response.json())
         .then((data) => {
           const freeSeats = show.seats * show.rows - data.seats.length
-          // [${freeSeats} freie Plätze] ${name} (${date} ${time})
+          totalBookedSeats += data.seats.length
           option.text = `${show.name} (${show.date} ${show.time}) [${freeSeats} freie Plätze]`
           if (freeSeats <= 0) {
             option.disabled = true
@@ -354,7 +358,27 @@ async function fillShowSelect() {
         })
     )
   })
+
   Promise.all(seatPromises).then(() => {
+    // Update progress bar
+    const progressBar = document.getElementById('totalSeatsProgress')
+    const progressText = document.getElementById('totalSeatsText')
+    const bookedPercentage = (totalBookedSeats / totalSeats) * 100
+    const remainingPercentage = 100 - bookedPercentage
+
+    progressBar.classList.remove('indeterminate')
+    progressBar.style.width = `${bookedPercentage}%`
+
+    // Create gradient color based on remaining percentage
+    const hue = remainingPercentage * 1.2 // This will go from 0 (red) to 120 (green)
+    progressBar.style.backgroundColor = `hsl(${hue}, 80%, 45%)`
+
+    progressText.innerText = `${
+      totalSeats - totalBookedSeats
+    } von ${totalSeats} Plätzen verfügbar (${Math.round(
+      bookedPercentage
+    )}% ausgebucht)`
+
     // If all options are disabled, show a message
     if (Array.from(select.options).every((option) => option.disabled)) {
       select.options[0].text = 'Alle Vorstellungen sind ausgebucht.'

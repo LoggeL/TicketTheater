@@ -94,7 +94,16 @@
           const tr = document.createElement('tr')
           for (const key in ticket) {
             const td = document.createElement('td')
-            td.textContent = ticket[key]
+            if (key === 'ticketId') {
+              const link = document.createElement('a')
+              link.href = `info.html#${ticket[key]}`
+              link.target = '_blank'
+              link.textContent = ticket[key]
+              link.classList.add('button', 'small')
+              td.appendChild(link)
+            } else {
+              td.textContent = ticket[key]
+            }
             tr.appendChild(td)
           }
           // Seats
