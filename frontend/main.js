@@ -373,11 +373,9 @@ async function fillShowSelect() {
     const hue = remainingPercentage * 1.2 // This will go from 0 (red) to 120 (green)
     progressBar.style.backgroundColor = `hsl(${hue}, 80%, 45%)`
 
-    progressText.innerText = `${
+    progressText.innerText = `${totalBookedSeats} Plätze gebucht. Noch ${
       totalSeats - totalBookedSeats
-    } von ${totalSeats} Plätzen verfügbar (${Math.round(
-      bookedPercentage
-    )}% ausgebucht)`
+    } Plätze verfügbar (${Math.round(bookedPercentage)}% ausgebucht)`
 
     // If all options are disabled, show a message
     if (Array.from(select.options).every((option) => option.disabled)) {
