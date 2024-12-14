@@ -1,19 +1,87 @@
+const isAdminPage = window.location.pathname.includes('admin.html')
+const isIndexPage =
+  window.location.pathname.includes('index.html') ||
+  window.location.pathname.endsWith('/')
+
 const API_URL = 'api'
 const unlockDate = new Date('2024-12-04T13:00:00+02:00')
 
-const countdownNotice = document.getElementById('countdownNotice')
+// Index page specific code
+if (isIndexPage) {
+  const countdownNotice = document.getElementById('countdownNotice')
 
-if (unlockDate > new Date()) {
-  countdownNotice.style.display = 'block'
-  countdownNotice.innerText = `Tickets erst ab ${unlockDate.toLocaleString()} verfügbar.`
+  if (unlockDate > new Date()) {
+    countdownNotice.style.display = 'block'
+    countdownNotice.innerText = `Tickets erst ab ${unlockDate.toLocaleString()} verfügbar.`
 
-  // Disable all forms
-  document.querySelectorAll('form').forEach((form) => {
-    form.querySelectorAll('input, button, select').forEach((element) => {
-      element.disabled = true
-      element.style.cursor = 'not-allowed'
+    // Disable all forms
+    document.querySelectorAll('form').forEach((form) => {
+      form.querySelectorAll('input, button, select').forEach((element) => {
+        element.disabled = true
+        element.style.cursor = 'not-allowed'
+      })
     })
-  })
+  }
+
+  // Other index.html specific functions
+  const submitButton = document.getElementById('submit')
+  function captchaCallback() {
+    if (unlockDate > new Date()) {
+      submitButton.disabled = true
+      return
+    }
+    submitButton.disabled = false
+  }
+
+  if (unlockDate > new Date()) {
+    setInterval(() => {
+      const diff = unlockDate - new Date()
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor(
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      )
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+      const formattedTime = `${days.toString().padStart(2, '0')}:${hours
+        .toString()
+        .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`
+      submitButton.innerText = `Countdown: (${formattedTime})`
+      if (diff <= 0) {
+        window.location.reload(true)
+      }
+    }, 1000)
+  } else {
+    fillShowSelect()
+      .then(() => {
+        document.getElementById('show').disabled = false
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }
+}
+
+// Shared functions that both pages use
+function displayError(e) {
+  const snackbarError = document.getElementById('snackbarError')
+  snackbarError.classList.add('active')
+  snackbarError.innerHTML = e
+  console.error(e)
+  setTimeout(() => {
+    snackbarError.classList.remove('active')
+  }, 5000)
+}
+
+function displaySuccess(e) {
+  const snackbarSuccess = document.getElementById('snackbarSuccess')
+  snackbarSuccess.classList.add('active')
+  snackbarSuccess.innerHTML = e
+  console.log(e)
+  setTimeout(() => {
+    snackbarSuccess.classList.remove('active')
+  }, 5000)
 }
 
 function bookTicket(event) {
@@ -408,60 +476,4 @@ async function fillShowSelect() {
       select.appendChild(option)
     })
   })
-}
-
-function displayError(e) {
-  const snackbarError = document.getElementById('snackbarError')
-  snackbarError.classList.add('active')
-  snackbarError.innerHTML = e
-  console.error(e)
-  setTimeout(() => {
-    snackbarError.classList.remove('active')
-  }, 5000)
-}
-
-function displaySuccess(e) {
-  const snackbarSuccess = document.getElementById('snackbarSuccess')
-  snackbarSuccess.classList.add('active')
-  snackbarSuccess.innerHTML = e
-  console.log(e)
-  setTimeout(() => {
-    snackbarSuccess.classList.remove('active')
-  }, 5000)
-}
-
-const submitButton = document.getElementById('submit')
-function captchaCallback() {
-  if (unlockDate > new Date()) {
-    submitButton.disabled = true
-    return
-  }
-  submitButton.disabled = false
-}
-
-if (unlockDate > new Date()) {
-  setInterval(() => {
-    const diff = unlockDate - new Date()
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-    const formattedTime = `${days.toString().padStart(2, '0')}:${hours
-      .toString()
-      .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
-      .toString()
-      .padStart(2, '0')}`
-    submitButton.innerText = `Countdown: (${formattedTime})`
-    if (diff <= 0) {
-      window.location.reload(true)
-    }
-  }, 1000)
-} else {
-  fillShowSelect()
-    .then(() => {
-      document.getElementById('show').disabled = false
-    })
-    .catch((err) => {
-      console.error(err)
-    })
 }

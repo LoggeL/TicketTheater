@@ -3,56 +3,180 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Theater Tickets</title>
-    <!-- Favicon img/logo.png -->
+    <title>Theater Tickets - Admin</title>
     <link rel="icon" href="img/logo.png" />
     <link rel="stylesheet" href="main.css" />
-
     <link
       href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
       rel="stylesheet"
     />
+
+    <style>
+      .sort-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+      }
+      .sort-header:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .sort-icon {
+        font-size: 18px;
+        opacity: 0.5;
+      }
+      th {
+        white-space: nowrap;
+      }
+      .small-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 8px;
+      }
+
+      .small-card .content {
+        padding: 12px;
+      }
+
+      .small-card h6 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .small-card .progress {
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .small-card .progress div {
+        height: 100%;
+        transition: width 0.3s ease;
+      }
+
+      .small-card small {
+        color: #666;
+        font-size: 0.875rem;
+      }
+
+      #showStats {
+        margin: 8px -8px;
+      }
     </style>
   </head>
 
   <body>
     <div class="triangle-container"></div>
     <header class="primary">
-      <nav class="">
+      <nav>
         <button class="circle transparent" onclick="window.history.back()">
           <i>arrow_back</i>
-          <span class="tooltip"> zurück zur Hautpseite </span>
+          <span class="tooltip">zurück zur Hauptseite</span>
         </button>
         <h5 class="max center-align">
-          <img class="" src="img/navLogo.png" style="height: 38px" />
-          Kolpingtheater Ramsen
+          <img src="img/navLogo.png" style="height: 38px" />
+          Kolpingtheater Ramsen - Admin
         </h5>
         <button class="circle transparent"></button>
       </nav>
     </header>
 
     <main class="responsive">
-      <h1>Admin Ticket Übersicht</h1>
-      <h5 class="small">
-        Hier können Sie den Status ALLER Tickets mit dem Passwort abfragen.
-      </h5>
-      <form onsubmit="getTickets(event)">
-        <div class="field label prefix border">
-          <i>key</i>
-          <input type="password" id="password" name="password" required />
-          <label>Password</label>
-        </div>
-        <button class="" id="submit" type="submit">
-          <i>info</i>
-          Abfragen
-        </button>
-        <button class="" id="export" type="button" onclick="exportTickets()" style="display: none">
-          <i>save_alt</i>
-          Exportieren (CSV)
-        </button>
-      </form>
+      <article>
+        <h1><i class="extra">admin_panel_settings</i> Admin Dashboard</h1>
 
-      <article id="ticketResult" style="display: none"></article>
+        <!-- Stats Cards -->
+        <div class="grid">
+          <div class="s12 m6 l3">
+            <div class="card">
+              <div class="content">
+                <h3 id="totalTickets">-</h3>
+                <p>Gebuchte Tickets</p>
+              </div>
+            </div>
+          </div>
+          <div class="s12 m6 l3">
+            <div class="card">
+              <div class="content">
+                <h3 id="totalSeats">-</h3>
+                <p>Gebuchte Plätze</p>
+              </div>
+            </div>
+          </div>
+          <div class="s12 m6 l3">
+            <div class="card">
+              <div class="content">
+                <h3 id="remainingSeats">-</h3>
+                <p>Verfügbare Plätze</p>
+              </div>
+            </div>
+          </div>
+          <div class="s12 m6 l3">
+            <div class="card">
+              <div class="content">
+                <h3 id="bookingRate">-</h3>
+                <p>Auslastung</p>
+              </div>
+            </div>
+          </div>
+          <div class="s12">
+            <div class="card">
+              <div class="content">
+                <h5><i>analytics</i> Auslastung pro Show</h5>
+                <div id="showStats" class="grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="card">
+          <div class="content">
+            <form onsubmit="getTickets(event)">
+              <div class="field label prefix border">
+                <i>key</i>
+                <input type="password" id="password" name="password" required />
+                <label>Admin Passwort</label>
+              </div>
+              <div class="field">
+                <button class="primary" id="submit" type="submit">
+                  <i>login</i>
+                  Anmelden
+                </button>
+                <button
+                  class="secondary"
+                  id="export"
+                  type="button"
+                  onclick="exportTickets()"
+                  style="display: none"
+                >
+                  <i>download</i>
+                  Als CSV exportieren
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div id="controls" style="display: none">
+          <div class="field label border">
+            <input type="text" id="searchInput" onkeyup="filterTable()" />
+            <label>Suchen...</label>
+          </div>
+          <div class="tabs">
+            <a class="active" onclick="filterByShow('all')">Alle Shows</a>
+            <a onclick="filterByShow('show1')">Show 1</a>
+            <a onclick="filterByShow('show2')">Show 2</a>
+          </div>
+        </div>
+
+        <!-- Tickets Table -->
+        <div id="ticketResult" style="display: none"></div>
+      </article>
 
       <div class="snackbar error" id="snackbarError"></div>
       <div class="snackbar green" id="snackbarSuccess"></div>
@@ -65,77 +189,340 @@
     <script src="main.js"></script>
 
     <script>
+      // Add these variables at the top of your script
+      let currentSort = {
+        column: null,
+        direction: 'asc',
+      }
+
+      // Admin-specific functions
+      async function getTickets(event) {
+        event.preventDefault()
+
+        console.log('submitting form')
+
+        // Check if the form is valid
+        if (!event.target.checkValidity()) {
+          return displayError('Bitte fülle alle Felder korrekt aus.')
+        }
+
+        // Send form data to backend
+        const password = document.getElementById('password').value
+        fetch(`${API_URL}/tickets`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Password': password,
+          },
+        })
+          .then((response) => {
+            response
+              .json()
+              .then((data) => {
+                if (data.error) {
+                  displayError(data.error)
+                } else if (data.message) {
+                  displaySuccess(data.message)
+                  displayTickets(data)
+                } else {
+                  displayError(
+                    'Beim Laden der Tickets ist ein Fehler aufgetreten.'
+                  )
+                }
+              })
+              .catch((error) => {
+                displayError(
+                  'Beim Laden der Tickets ist ein Fehler aufgetreten: ' + error
+                )
+              })
+          })
+          .catch((error) => {
+            displayError(
+              'Beim Laden der Tickets ist ein Fehler aufgetreten: ' + error
+            )
+          })
+      }
+
       function displayTickets(data) {
-        const {tickets, seats} = data
+        const { tickets, seats } = data
+
+        // Calculate total seats per show
+        const shows = [...new Set(tickets.map((t) => t.show))].sort()
+        const totalSeatsPerShow = {}
+        const bookedSeatsPerShow = {}
+        shows.forEach((show) => {
+          totalSeatsPerShow[show] = 70 // Replace with actual total seats
+          bookedSeatsPerShow[show] = seats.filter(
+            (s) => tickets.find((t) => t.ticketId === s.ticketId)?.show === show
+          ).length
+        })
+
+        // Update stats
+        document.getElementById('totalTickets').textContent = tickets.length
+        document.getElementById('totalSeats').textContent = seats.length
+        const totalSeats = Object.values(totalSeatsPerShow).reduce(
+          (a, b) => a + b,
+          0
+        )
+        document.getElementById('remainingSeats').textContent =
+          totalSeats - seats.length
+        document.getElementById('bookingRate').textContent =
+          Math.round((seats.length / totalSeats) * 100) + '%'
+
+        // Update per-show stats
+        const showStats = document.getElementById('showStats')
+        showStats.innerHTML = shows
+          .map((show) => {
+            const booked = bookedSeatsPerShow[show]
+            const total = totalSeatsPerShow[show]
+            const percentage = Math.round((booked / total) * 100)
+            const hue = (100 - percentage) * 1.2 // Color gradient from red to green
+
+            return `
+            <div class="s12 m6 l3">
+              <div class="small-card">
+                <div class="content">
+                  <h6>${show}</h6>
+                  <div class="field border round" style="margin: 8px 0;">
+                    <div class="progress">
+                      <div style="width: ${percentage}%; background-color: hsl(${hue}, 80%, 45%);"></div>
+                    </div>
+                  </div>
+                  <small>${booked} von ${total} Plätzen gebucht (${percentage}%)</small>
+                </div>
+              </div>
+            </div>
+          `
+          })
+          .join('')
+
+        // Show controls
+        document.getElementById('controls').style.display = 'block'
+
+        // Update show tabs
+        const tabsContainer = document.querySelector('.tabs')
+        tabsContainer.innerHTML = `
+          <a class="active" onclick="filterByShow('all')">Alle Shows</a>
+          ${shows
+            .map((show) => `<a onclick="filterByShow('${show}')">${show}</a>`)
+            .join('')}
+        `
 
         const ticketResult = document.getElementById('ticketResult')
-        // Clear ticket result
         ticketResult.innerHTML = ''
-        // Create table
+
+        // Create table with responsive wrapper
+        const tableWrapper = document.createElement('div')
+        tableWrapper.classList.add('responsive-table')
+
         const table = document.createElement('table')
-        table.classList.add('bordered')
-        // Create table head
+        table.classList.add('striped')
+
+        // Table head with sortable columns
         const thead = document.createElement('thead')
         const tr = document.createElement('tr')
-        for (const key in tickets[0]) {
+        const headers = [
+          { text: 'Ticket ID', key: 'ticketId' },
+          { text: 'Name', key: 'name' },
+          { text: 'Email', key: 'email' },
+          { text: 'Show', key: 'show' },
+          { text: 'Sitze', key: 'seats' },
+        ]
+
+        headers.forEach((header) => {
           const th = document.createElement('th')
-          th.textContent = key
+          th.innerHTML = `
+            <div class="sort-header" onclick="sortTable('${header.key}')">
+              ${header.text}
+              <i class="sort-icon" id="sort-${header.key}">sort</i>
+            </div>
+          `
+          th.style.cursor = 'pointer'
           tr.appendChild(th)
-        }
-        const th = document.createElement('th')
-        th.innerText = "Seats"
-        tr.append(th)
+        })
         thead.appendChild(tr)
         table.appendChild(thead)
 
-        // Create table body
+        // Table body
         const tbody = document.createElement('tbody')
-        for (const ticket of tickets) {
+        tickets.forEach((ticket) => {
           const tr = document.createElement('tr')
-          for (const key in ticket) {
-            const td = document.createElement('td')
-            if (key === 'ticketId') {
-              const link = document.createElement('a')
-              link.href = `info.html#${ticket[key]}`
-              link.target = '_blank'
-              link.textContent = ticket[key]
-              link.classList.add('button', 'small')
-              td.appendChild(link)
-            } else {
-              td.textContent = ticket[key]
-            }
-            tr.appendChild(td)
-          }
+
+          // Ticket ID with link
+          const tdId = document.createElement('td')
+          const link = document.createElement('a')
+          link.href = `info.html#${ticket.ticketId}`
+          link.target = '_blank'
+          link.innerHTML = `${ticket.ticketId} <i class="small">open_in_new</i>`
+          link.classList.add('button', 'small')
+          tdId.appendChild(link)
+          tr.appendChild(tdId)
+
+          // Other columns
+          tr.appendChild(createTd(ticket.name))
+          tr.appendChild(createTd(ticket.email))
+          tr.appendChild(createTd(ticket.show))
+
           // Seats
-          const td = document.createElement('td')
-          const ticketSeats = seats.filter(s => s.ticketId == ticket.ticketId)
-          td.innerText = ticketSeats.map(s => `${parseInt(s.row) + 1}-${parseInt(s.seat) + 1}`).join(', ')
-          tr.append(td)
+          const tdSeats = document.createElement('td')
+          const ticketSeats = seats.filter(
+            (s) => s.ticketId === ticket.ticketId
+          )
+          tdSeats.innerText = ticketSeats
+            .map((s) => `${parseInt(s.row) + 1}-${parseInt(s.seat) + 1}`)
+            .join(', ')
+          tr.appendChild(tdSeats)
+
           tbody.appendChild(tr)
-        }
+        })
 
         table.appendChild(tbody)
-        ticketResult.appendChild(table)
+        tableWrapper.appendChild(table)
+        ticketResult.appendChild(tableWrapper)
         ticketResult.style.display = 'block'
 
         // Show export button
         document.getElementById('export').style.display = 'inline-flex'
       }
 
-      // HTML table to CSV
+      function createTd(content) {
+        const td = document.createElement('td')
+        td.textContent = content
+        return td
+      }
+
+      function filterTable() {
+        const input = document.getElementById('searchInput')
+        const filter = input.value.toLowerCase()
+        const table = document.querySelector('#ticketResult table')
+        const tr = table.getElementsByTagName('tr')
+
+        for (let i = 1; i < tr.length; i++) {
+          const td = tr[i].getElementsByTagName('td')
+          let txtValue = ''
+          for (let j = 0; j < td.length; j++) {
+            txtValue += td[j].textContent || td[j].innerText
+          }
+          if (txtValue.toLowerCase().indexOf(filter) > -1) {
+            tr[i].style.display = ''
+          } else {
+            tr[i].style.display = 'none'
+          }
+        }
+      }
+
+      function filterByShow(show) {
+        const table = document.querySelector('#ticketResult table')
+        const tr = table.getElementsByTagName('tr')
+
+        // Update active tab
+        document.querySelectorAll('.tabs a').forEach((tab) => {
+          tab.classList.toggle(
+            'active',
+            (show === 'all' && tab.textContent === 'Alle Shows') ||
+              tab.textContent === show
+          )
+        })
+
+        for (let i = 1; i < tr.length; i++) {
+          if (show === 'all') {
+            tr[i].style.display = ''
+          } else {
+            const showCell = tr[i].getElementsByTagName('td')[3] // Show column
+            if (showCell.textContent === show) {
+              tr[i].style.display = ''
+            } else {
+              tr[i].style.display = 'none'
+            }
+          }
+        }
+      }
+
       function exportTickets() {
         const table = document.querySelector('#ticketResult table')
         const rows = Array.from(table.querySelectorAll('tr'))
-        const csv = "sep=;\n" + rows.map(row => {
-          const columns = Array.from(row.querySelectorAll('th, td'))
-          return columns.map(column => `"${column.innerText}"`).join(';')
-        }).join('\n')
-        const blob = new Blob([csv], {type: 'text/csv'})
+        const csv =
+          'sep=;\n' +
+          rows
+            .map((row) => {
+              const columns = Array.from(row.querySelectorAll('th, td'))
+              return columns.map((column) => `"${column.innerText}"`).join(';')
+            })
+            .join('\n')
+        const blob = new Blob([csv], { type: 'text/csv' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'tickets.csv'
+        a.download = `tickets_${new Date().toISOString().split('T')[0]}.csv`
         a.click()
+      }
+
+      function sortTable(column) {
+        const table = document.querySelector('#ticketResult table')
+        const tbody = table.querySelector('tbody')
+        const rows = Array.from(tbody.querySelectorAll('tr'))
+
+        // Update sort icons
+        document.querySelectorAll('.sort-icon').forEach((icon) => {
+          if (icon.id === `sort-${column}`) {
+            if (currentSort.column === column) {
+              icon.textContent =
+                currentSort.direction === 'asc'
+                  ? 'arrow_downward'
+                  : 'arrow_upward'
+            } else {
+              icon.textContent = 'arrow_downward'
+            }
+          } else {
+            icon.textContent = 'sort'
+          }
+        })
+
+        // Update sort direction
+        if (currentSort.column === column) {
+          currentSort.direction =
+            currentSort.direction === 'asc' ? 'desc' : 'asc'
+        } else {
+          currentSort.column = column
+          currentSort.direction = 'asc'
+        }
+
+        // Get the index of the column
+        const headerCells = Array.from(table.querySelectorAll('th'))
+        const columnIndex = headerCells.findIndex((cell) =>
+          cell.textContent.trim().toLowerCase().includes(column.toLowerCase())
+        )
+
+        // Sort the rows
+        const sortedRows = rows.sort((a, b) => {
+          const aValue = a.cells[columnIndex].textContent.trim()
+          const bValue = b.cells[columnIndex].textContent.trim()
+
+          // Handle numeric sorting for seats
+          if (column === 'seats') {
+            return currentSort.direction === 'asc'
+              ? aValue.length - bValue.length
+              : bValue.length - aValue.length
+          }
+
+          // Handle ticket ID sorting (assuming it's numeric)
+          if (column === 'ticketId') {
+            return currentSort.direction === 'asc'
+              ? parseInt(aValue) - parseInt(bValue)
+              : parseInt(bValue) - parseInt(aValue)
+          }
+
+          // Default string sorting
+          return currentSort.direction === 'asc'
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue)
+        })
+
+        // Clear and re-append sorted rows
+        while (tbody.firstChild) {
+          tbody.removeChild(tbody.firstChild)
+        }
+        sortedRows.forEach((row) => tbody.appendChild(row))
       }
     </script>
   </body>
