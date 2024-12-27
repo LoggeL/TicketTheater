@@ -258,7 +258,7 @@ app.post('/api/tickets', async (request, response) => {
     }
 
     await transporter.sendMail({
-      from: `"Kolpingjungen Ramsen" <${config.emailUser}>`, // sender address
+      from: `"Kolpingjugend Ramsen" <${config.emailUser}>`, // sender address
       to: ticket.email,
       subject: config.emails.reservation.subject,
       text: mailTemplate(config.emails.reservation.body, {
