@@ -1,119 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Theater Tickets</title>
-    <link rel="icon" href="img/logo.png" />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="main.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theater Tickets</title>
+  <link rel="icon" href="img/logo.png" />
 
-  <body>
-    <div class="triangle-container"></div>
-    <header class="primary">
-      <nav class="">
-        <button class="circle transparent" onclick="window.history.back()">
-          <i>arrow_back</i>
-          <span class="tooltip"> zurück zur Hautpseite </span>
-        </button>
-        <h5 class="max center-align">
-          <img class="" src="img/navLogo.png" style="height: 38px" />
-          Kolpingtheater Ramsen
-        </h5>
-        <button class="circle transparent"></button>
-      </nav>
-    </header>
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="main.css" />
+</head>
 
-    <main class="responsive">
-      <article>
-        <h1>Ticket Reservierung für das Winterstück 2024</h1>
-        <p class="large">
-          Willkommen zur Ticketreservierung für unser Theater Winterstück 2024!
-          Da die Plätze begrenzt sind, bieten wir kostenlose Karten an, um
-          sicherzustellen, dass jeder die Chance hat, unsere Aufführung zu
-          sehen. Bitte reservieren Sie Ihre Karten unten und geben Sie uns Ihren
-          <b>Namen</b>, Ihre <b>E-Mail-Adresse</b> und die
-          <b>Anzahl der Personen</b> (max 5.) in Ihrer Gruppe an. Wir freuen uns
-          darauf, Sie bei unserem Winterstück begrüßen zu dürfen! Die
-          Aufführungen finden am <b>27. & 28. Dezember 2024</b> statt.
-          <br />
-          <br />
-          Bei technischen Problemen oder sonstigen Fragen erreichen Sie uns
-          unter
-          <b>kolpingjugendramsen@gmail.com</b>.
-        </p>
-        <div class="field border round">
-          <div class="progress">
-            <div id="totalSeatsProgress" class="indeterminate"></div>
-          </div>
-          <small id="totalSeatsText">Lade verfügbare Plätze...</small>
+<body>
+  <div class="triangle-container"></div>
+  <header class="primary">
+    <nav class="">
+      <button class="circle transparent" onclick="window.history.back()">
+        <i>arrow_back</i>
+        <span class="tooltip"> zurück zur Hautpseite </span>
+      </button>
+      <h5 class="max center-align">
+        <img class="" src="img/navLogo.png" style="height: 38px" />
+        Kolpingtheater Ramsen
+      </h5>
+      <button class="circle transparent"></button>
+    </nav>
+  </header>
+
+  <main class="responsive">
+    <article>
+      <h1>Ticket Reservierung für das Winterstück 2024</h1>
+      <p class="large">
+        Willkommen zur Ticketreservierung für unser Theater Winterstück 2024!
+        Da die Plätze begrenzt sind, bieten wir kostenlose Karten an, um
+        sicherzustellen, dass jeder die Chance hat, unsere Aufführung zu
+        sehen. Bitte reservieren Sie Ihre Karten unten und geben Sie uns Ihren
+        <b>Namen</b>, Ihre <b>E-Mail-Adresse</b> und die
+        <b>Anzahl der Personen</b> (max 5.) in Ihrer Gruppe an. Wir freuen uns
+        darauf, Sie bei unserem Winterstück begrüßen zu dürfen! Die
+        Aufführungen finden am <b>27. & 28. Dezember 2024</b> statt.
+        <br />
+        <br />
+        Bei technischen Problemen oder sonstigen Fragen erreichen Sie uns
+        unter
+        <b>kolpingjugendramsen@gmail.com</b>.
+      </p>
+      <div class="field border round">
+        <div class="progress">
+          <div id="totalSeatsProgress" class="indeterminate"></div>
         </div>
-        <p
-          class="large error-container"
-          id="countdownNotice"
-          style="display: none"
-        >
-          Tickets erst ab [Datum] verfügbar.
-        </p>
+        <small id="totalSeatsText">Lade verfügbare Plätze...</small>
+      </div>
+      <p class="large error-container" id="countdownNotice" style="display: none">
+        Tickets erst ab [Datum] verfügbar.
+      </p>
+      <div class="space"></div>
+      <form onsubmit="bookTicket(event)">
+        <div class="field label prefix border">
+          <i>person</i>
+          <input type="text" name="name" />
+          <label>Vorname, Nachname</label>
+        </div>
+        <div class="field label prefix border">
+          <i>email</i>
+          <input type="email" name="email" />
+          <label>E-Mail</label>
+        </div>
+        <div class="field label suffix border">
+          <select name="show" id="show">
+            <option selected disabled>Bitte auswählen</option>
+          </select>
+          <label>Aufführung</label>
+          <i>arrow_drop_down</i>
+        </div>
+        <h3 id="allBooked" class="red-text" style="display: none">
+          <i class="extra">info</i>
+          Aktuell sind alle Plätze bereits ausgebucht.
+        </h3>
+        <h2><i class="extra">event_seat</i>Platzauswahl</h2>
+        <h3 id="seatCounter">
+          <span id="seatCounterNumber">0</span>/5 Plätze gewählt
+        </h3>
+        <div id="seatContainer"></div>
         <div class="space"></div>
-        <form onsubmit="bookTicket(event)">
-          <div class="field label prefix border">
-            <i>person</i>
-            <input type="text" name="name" />
-            <label>Vorname, Nachname</label>
-          </div>
-          <div class="field label prefix border">
-            <i>email</i>
-            <input type="email" name="email" />
-            <label>E-Mail</label>
-          </div>
-          <div class="field label suffix border">
-            <select name="show" id="show">
-              <option selected disabled>Bitte auswählen</option>
-            </select>
-            <label>Aufführung</label>
-            <i>arrow_drop_down</i>
-          </div>
-          <h3 id="allBooked" class="red-text" style="display: none">
-            <i class="extra">info</i>
-            Aktuell sind alle Plätze bereits ausgebucht.
-          </h3>
-          <h2><i class="extra">event_seat</i>Platzauswahl</h2>
-          <h3 id="seatCounter">
-            <span id="seatCounterNumber">0</span>/5 Plätze gewählt
-          </h3>
-          <div id="seatContainer"></div>
-          <div class="space"></div>
-          <button class="btn primary" type="submit" id="submit" disabled>
-            Reservieren
-          </button>
-          <div class="space"></div>
-          <!-- data-sitekey="1x00000000000000000000AA" -->
-          <div
-            data-sitekey="0x4AAAAAAAMmiOHBE5aRG9yx"
-            class="cf-turnstile"
-            data-callback="captchaCallback"
-            data-theme="light"
-          ></div>
-        </form>
-        <div class="snackbar error" id="snackbarError"></div>
-        <div class="snackbar green" id="snackbarSuccess"></div>
-      </article>
-    </main>
+        <button class="btn primary" type="submit" id="submit" disabled>
+          Reservieren
+        </button>
+        <div class="space"></div>
+        <!-- data-sitekey="1x00000000000000000000AA" -->
+        <div data-sitekey="0x4AAAAAAAMmiOHBE5aRG9yx" class="cf-turnstile" data-callback="captchaCallback"
+          data-theme="light"></div>
+      </form>
+      <div class="snackbar error" id="snackbarError"></div>
+      <div class="snackbar green" id="snackbarSuccess"></div>
+    </article>
+  </main>
 
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"
-    ></script>
-    <script src="main.js"></script>
-    <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-      defer
-    ></script>
-  </body>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.2/dist/cdn/beer.min.js"></script>
+  <script src="main.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "a24bd6cb4b264bd8998ae0b47e98ec71"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+
 </html>
